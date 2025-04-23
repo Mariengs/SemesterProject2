@@ -7,7 +7,15 @@ module.exports = {
     "./src/**/*.{html,js}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#3490dc",
+      },
+      fontFamily: {
+        body: ['"Open Sans"', "sans-serif"],
+        heading: ['"Poppins"', "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

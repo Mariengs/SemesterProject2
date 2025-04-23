@@ -1,1 +1,170 @@
-!
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../src/main.css" rel="stylesheet" />
+    <script type="module" src="../js/api/register.js"></script>
+    <script type="module" src="../js/ui/navbar.js"></script>
+    <title>Register</title>
+  </head>
+  <body class="bg-gray-900 text-white flex flex-col min-h-screen">
+    <header class="bg-gray-800 shadow-md">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
+            Auction House
+          </div>
+
+          <!-- Burger Menu (Mobile) -->
+          <div class="md:hidden">
+            <button id="menu-toggle" class="text-gray-200 focus:outline-none">
+              ☰
+            </button>
+          </div>
+
+          <!-- Nav Links (Desktop) -->
+          <div class="hidden md:flex space-x-6">
+            <a
+              href="/"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Home</a
+            >
+            <a
+              href="/html/register.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Register</a
+            >
+            <a
+              href="/html/login.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Login</a
+            >
+            <a
+              href="/html/listings.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Listings</a
+            >
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
+          <a
+            href="index.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Home</a
+          >
+          <a
+            href="register.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Register</a
+          >
+          <a
+            href="login.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Login</a
+          >
+          <a
+            href="listings.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Listings</a
+          >
+        </div>
+      </nav>
+    </header>
+    <main class="flex justify-center items-center min-h-screen px-4">
+      <form
+        id="registerForm"
+        class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md space-y-6"
+      >
+        <h1 class="text-2xl font-bold text-center">Register</h1>
+
+        <p id="formError" class="text-red-500 text-sm hidden text-center"></p>
+
+        <div>
+          <label for="name" class="block text-sm font-medium mb-1"
+            >Username</label
+          >
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium mb-1"
+            >E-mail</label
+          >
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium mb-1"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="bio" class="block text-sm font-medium mb-1"
+            >Bio (optional)</label
+          >
+          <textarea
+            id="bio"
+            name="bio"
+            rows="3"
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="avatar-url" class="block text-sm font-medium mb-1"
+            >Avatar URL (optional)</label
+          >
+          <input
+            type="url"
+            id="avatar-url"
+            name="avatar-url"
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="banner-url" class="block text-sm font-medium mb-1"
+            >Banner URL (optional)</label
+          >
+          <input
+            type="url"
+            id="banner-url"
+            name="banner-url"
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold transition-colors"
+        >
+          Register
+        </button>
+      </form>
+    </main>
+  </body>
+</html>

@@ -1,4 +1,9 @@
-import { REGISTER_URL } from "../api/auth.js";
+import { REGISTER_URL } from "./auth.js";
+import { toggleMenu } from "../ui/navbar.js";
+
+document.addEventListener("DOMContentLoaded", function () {
+  toggleMenu();
+});
 
 function showErrorMessage(elementId, message) {
   const errorElement = document.getElementById(elementId);
@@ -87,7 +92,7 @@ async function registerUser(requestBody) {
 }
 
 document
-  .getElementById("registerform")
+  .getElementById("registerForm")
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
