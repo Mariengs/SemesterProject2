@@ -2,8 +2,10 @@
   "name": "semesterproject2",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.html",
-  "scripts": {},
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./src/input.css -o ./src/main.css --watch"
+  },
   "dependencies": {
     "vite": "^5.0.0"
   },
