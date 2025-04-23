@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import tailwindcss from "@tailwindcss/vite";
+
 export default defineConfig({
-  plugins: [tailwindcss()],
+  // Ingen spesielle plugins nødvendige for Tailwind, men du kan legge til eventuelle andre du trenger her
 });
