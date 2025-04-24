@@ -1,6 +1,7 @@
 export const BASE_URL = "https://v2.api.noroff.dev/";
 export const LOGIN_URL = "https://v2.api.noroff.dev/auth/login";
 export const REGISTER_URL = "https://v2.api.noroff.dev/auth/register";
+export const API_KEY = "189c7714-8a1c-4a77-963f-6b89d86e85a9";
 
 export function getAccessToken() {
   return localStorage.getItem("accessToken");
@@ -30,5 +31,6 @@ export async function login(username, password) {
 
 export async function logout() {
   localStorage.removeItem("accessToken");
+  localStorage.removeItem("user");
   window.location.href = "/";
 }

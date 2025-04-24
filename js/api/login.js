@@ -1,57 +1,49 @@
-import { LOGIN_URL } from "../api/auth.js";
+import { toggleMenu } from "../ui/navbar.js";
+import { LOGIN_URL, API_KEY } from "./auth.js";
 
-async function logIn(email, password) {
+document.addEventListener("DOMContentLoaded", function () {
+  toggleMenu();
+});
+
+const loginForm = document.getElementById("loginForm");
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  if (!email.endsWith("@stud.noroff.no")) {
+    alert("You must have @stud.noroff.no e-mail address to log in.");
+    return;
+  }
+
   try {
-    const response = await fetch(`${LOGIN_URL}`, {
+    const response = await fetch(LOGIN_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
+    const result = await response.json();
 
-    const data = await response.json();
+    if (response.ok) {
+      const { accessToken, name, credits } = result.data;
 
-    if (data.accessToken) {
-      localStorage.setItem("user", JSON.stringify({ username: data.username }));
-      localStorage.setItem("accessToken", data.accessToken);
+      // Lagre data i localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("credits", credits);
 
-      alert("Login successful!");
-      window.location.href = "/";
-    } else if (data.data && data.data.accessToken) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ username: data.data.name })
-      );
-      localStorage.setItem("accessToken", data.data.accessToken);
+      localStorage.setItem("apiKey", API_KEY);
 
-      alert("Login successful!");
+      alert(`Welcome, ${name}!`);
       window.location.href = "/";
     } else {
-      throw new Error("No access token received");
+      alert(result.errors?.[0]?.message || "Login failed.");
     }
   } catch (error) {
     console.error("Error logging in:", error);
-    alert("Could not log in. Please try again.");
+    alert("Something went wrong.");
   }
-}
-
-document
-  .getElementById("loginForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-      alert("Please fill in both fields.");
-      return;
-    }
-
-    logIn(email, password);
-  });
+});

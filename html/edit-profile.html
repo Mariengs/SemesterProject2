@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="../src/main.css" rel="stylesheet" />
-    <script type="module" src="../js/api/login.js"></script>
-    <title>Login</title>
+    <title>Edit Profile</title>
+    <script type="module" src="../js/user/editProfile.js"></script>
+    <link rel="stylesheet" href="../src/main.css" />
   </head>
   <body class="bg-gray-900 text-white flex flex-col min-h-screen">
     <header class="bg-gray-800 shadow-md">
@@ -46,18 +46,16 @@
         </div>
 
         <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
-          <a
-            href="index.html"
-            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+          <a href="/" class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >Home</a
           >
           <a
-            href="register.html"
+            href="html/register.html"
             class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >Register</a
           >
           <a
-            href="login.html"
+            href="html/login.html"
             class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >Login</a
           >
@@ -70,46 +68,8 @@
       </nav>
     </header>
 
-    <main class="flex justify-center items-center min-h-screen px-4">
-      <form
-        id="loginForm"
-        class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md space-y-6"
-      >
-        <h1 class="text-2xl font-bold text-center">Login</h1>
-
-        <p id="formError" class="text-red-500 text-sm hidden text-center"></p>
-
-        <div>
-          <label for="loginEmail" class="block text-sm font-medium mb-1"
-            >E-mail</label
-          >
-          <input
-            type="email"
-            id="loginEmail"
-            required
-            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label for="loginPassword" class="block text-sm font-medium mb-1"
-            >Password</label
-          >
-          <input
-            type="password"
-            id="loginPassword"
-            required
-            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold transition-colors"
-        >
-          Login
-        </button>
-      </form>
+    <main>
+      <div id="profileContainer" class="max-w-3xl mx-auto p-6"></div>
     </main>
   </body>
 </html>
