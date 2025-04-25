@@ -89,7 +89,7 @@ async function fetchListings() {
   try {
     const response = await fetch(apiUrl);
     const result = await response.json();
-    allListings = result.data;
+    allListings = result.data; // Henter annonser fra API
     applyFilters();
   } catch (error) {
     console.error("Error fetching listings:", error);
@@ -123,7 +123,7 @@ function applyFilters() {
 
 export function displayListings() {
   const listingsContainer = document.getElementById("listings");
-  listingsContainer.innerHTML = ""; // Tøm containeren først
+  listingsContainer.innerHTML = "";
 
   const start = (currentPage - 1) * listingsPerPage;
   const end = start + listingsPerPage;
@@ -137,6 +137,13 @@ export function displayListings() {
   }
 
   listingsToShow.forEach((listing) => {
+    const linkWrapper = document.createElement("a");
+    linkWrapper.setAttribute(
+      "href",
+      `/html/single-listing.html?id=${listing.id}`
+    );
+    linkWrapper.classList.add("block", "hover:no-underline");
+
     const listingElement = document.createElement("div");
     listingElement.classList.add(
       "bg-gray-800",
@@ -149,7 +156,6 @@ export function displayListings() {
       "ease-in-out"
     );
 
-    // Hente bilde-URL og alt-tekst fra API-svaret
     const imageUrl =
       listing.media && listing.media.length > 0
         ? listing.media[0].url
@@ -163,29 +169,24 @@ export function displayListings() {
     img.setAttribute(
       "src",
       "https://via.placeholder.com/300x200?text=Lasting..."
-    ); // Midlertidig plassholder
+    );
     img.setAttribute("alt", imageAlt);
     img.classList.add("w-full", "h-48", "object-cover", "rounded-md", "mb-4");
-    img.setAttribute("loading", "lazy"); // Lazy load for bedre ytelse
-
-    // Umiddelbart sett src til riktig bilde
+    img.setAttribute("loading", "lazy");
     img.setAttribute("src", imageUrl);
 
     listingElement.appendChild(img);
 
-    // Tittel
     const title = document.createElement("h3");
     title.classList.add("text-xl", "font-semibold", "text-gray-200", "mb-2");
     title.textContent = listing.title;
     listingElement.appendChild(title);
 
-    // Beskrivelse
     const description = document.createElement("p");
     description.classList.add("text-gray-400", "mb-4");
     description.textContent = listing.description || "Ingen beskrivelse.";
     listingElement.appendChild(description);
 
-    // Sluttdato
     const endTime = document.createElement("div");
     endTime.classList.add("text-gray-300", "mb-4");
 
@@ -197,7 +198,6 @@ export function displayListings() {
     );
     listingElement.appendChild(endTime);
 
-    // Høyeste bud
     const highestBid = listing.bids?.length
       ? Math.max(...listing.bids.map((b) => b.amount))
       : 0;
@@ -216,18 +216,8 @@ export function displayListings() {
     bidAmount.appendChild(document.createTextNode(`${highestBid} kr`));
     listingElement.appendChild(bidAmount);
 
-    // Knappelement (Mer info)
-    const detailButton = document.createElement("a");
-    detailButton.classList.add("text-blue-400", "hover:text-blue-600");
-    detailButton.setAttribute("href", "#");
-    detailButton.textContent = "More info";
-    detailButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      showDetails(listing.id);
-    });
-    listingElement.appendChild(detailButton);
-
-    listingsContainer.appendChild(listingElement);
+    linkWrapper.appendChild(listingElement);
+    listingsContainer.appendChild(linkWrapper);
   });
 
   updatePagination();
@@ -240,11 +230,6 @@ function updatePagination() {
 
   document.getElementById("prevPage").disabled = currentPage === 1;
   document.getElementById("nextPage").disabled = currentPage === totalPages;
-}
-
-function showDetails(id) {
-  alert(`Details for listing with ID: ${id}`);
-  // location.href = `/details.html?id=${id}`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {

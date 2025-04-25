@@ -69,6 +69,10 @@ form.addEventListener("submit", async (e) => {
       message.classList.remove("text-red-500");
       message.classList.add("text-green-500");
       form.reset();
+
+      // Etter opprettelsen, oppdater allListings og vis den nye annonsen
+      allListings.push(result.data); // Legger til den nye annonsen i listen
+      applyFilters(); // Vis oppdaterte annonser
     } else {
       throw new Error(
         result.errors?.[0]?.message || "Failed to create listing."
@@ -80,3 +84,62 @@ form.addEventListener("submit", async (e) => {
     message.classList.add("text-red-500");
   }
 });
+
+// Funksjon for å hente og vise brukerens egne annonser
+function fetchUserListings() {
+  const token = getAccessToken();
+  const userName = localStorage.getItem("userName");
+
+  if (!userName || !token) {
+    return; // Hvis brukeren ikke er logget inn, hent ikke innlegg
+  }
+
+  fetch("https://v2.api.noroff.dev/auction/listings", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "X-Noroff-API-Key": API_KEY,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const userListings = data.data.filter(
+        (listing) => listing.author?.username === userName
+      );
+
+      if (userListings.length === 0) {
+        message.textContent = "You have no listings yet.";
+        message.classList.remove("text-green-500");
+        message.classList.add("text-gray-500");
+      } else {
+        const listingsContainer = document.getElementById("listings-container");
+        listingsContainer.innerHTML = ""; // Tøm eksisterende innhold
+
+        userListings.forEach((listing) => {
+          const listingCard = document.createElement("div");
+          listingCard.className = "listing-card";
+
+          const listingTitle = document.createElement("h3");
+          listingTitle.textContent = listing.title;
+          listingCard.appendChild(listingTitle);
+
+          const listingDescription = document.createElement("p");
+          listingDescription.textContent = listing.description;
+          listingCard.appendChild(listingDescription);
+
+          const listingLink = document.createElement("a");
+          listingLink.textContent = "View Listing";
+          listingLink.setAttribute(
+            "href",
+            `/html/single-listing.html?id=${listing.id}`
+          );
+          listingCard.appendChild(listingLink);
+
+          listingsContainer.appendChild(listingCard);
+        });
+      }
+    })
+    .catch((error) => {
+      message.textContent = `Failed to fetch listings: ${error.message}`;
+      message.classList.add("text-red-500");
+    });
+}
