@@ -3,7 +3,152 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link href="../src/main.css" rel="stylesheet" />
+    <script type="module" src="../js/user/createListing.js"></script>
+    <title>Create Listing</title>
   </head>
-  <body></body>
+  <body class="bg-gray-900 text-white flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <header class="bg-gray-800 shadow-md">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
+            Auction House
+          </div>
+
+          <div class="md:hidden">
+            <button id="menu-toggle" class="text-gray-200 focus:outline-none">
+              ☰
+            </button>
+          </div>
+
+          <div class="hidden md:flex space-x-6">
+            <a
+              href="../index.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Home</a
+            >
+            <a
+              href="register.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Register</a
+            >
+            <a
+              href="login.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Login</a
+            >
+            <a
+              href="listings.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Listings</a
+            >
+          </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
+          <a
+            href="../index.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Home</a
+          >
+          <a
+            href="register.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Register</a
+          >
+          <a
+            href="login.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Login</a
+          >
+          <a
+            href="listings.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Listings</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-1">
+      <section
+        class="max-w-2xl mx-auto p-6 mt-10 bg-gray-800 rounded-lg shadow-md"
+      >
+        <h1 class="text-2xl font-bold mb-6 text-center">Create New Listing</h1>
+        <form id="create-listing-form" class="space-y-4">
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-300"
+              >Title</label
+            >
+            <input
+              type="text"
+              id="title"
+              required
+              class="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+            />
+          </div>
+
+          <div>
+            <label
+              for="description"
+              class="block text-sm font-medium text-gray-300"
+              >Description</label
+            >
+            <textarea
+              id="description"
+              rows="4"
+              class="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="media" class="block text-sm font-medium text-gray-300"
+              >Image URLs (comma-separated)</label
+            >
+            <input
+              type="text"
+              id="media"
+              class="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+            />
+          </div>
+
+          <div>
+            <label for="endsAt" class="block text-sm font-medium text-gray-300"
+              >End Date</label
+            >
+            <input
+              type="datetime-local"
+              id="endsAt"
+              required
+              class="w-full mt-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md"
+          >
+            Create Listing
+          </button>
+
+          <p id="form-message" class="text-sm text-center mt-2"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-8 mt-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center space-x-8">
+          <a href="#" class="hover:text-gray-200">About Us</a>
+          <a href="#" class="hover:text-gray-200">Contact</a>
+          <a href="#" class="hover:text-gray-200">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-200">Terms of Service</a>
+        </div>
+        <div class="text-center text-sm mt-4">
+          <p>&copy; 2025 Auction House. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>

@@ -23,6 +23,10 @@ export function updateNavbarForUser() {
         link.textContent = "Profile";
         link.setAttribute("href", `/html/profile.html?name=${userName}`);
       }
+      if (link.textContent.trim() === "Register") {
+        link.textContent = "Create Listing";
+        link.setAttribute("href", "/html/create-listing.html"); // Legg til riktig URL for opprettelse av annonse
+      }
     });
 
     // Bytt ut "Login" i mobil-nav
@@ -30,6 +34,10 @@ export function updateNavbarForUser() {
       if (link.textContent.trim() === "Login") {
         link.textContent = "Profile";
         link.setAttribute("href", `/html/profile.html?name=${userName}`);
+      }
+      if (link.textContent.trim() === "Register") {
+        link.textContent = "Create Listing";
+        link.setAttribute("href", "/html/create-listing.html"); // Legg til riktig URL for opprettelse av annonse
       }
     });
   }

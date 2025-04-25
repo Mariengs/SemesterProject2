@@ -1,8 +1,13 @@
-import { toggleMenu } from "../ui/navbar.js";
-import { updateNavbarForUser } from "../ui/navbar.js";
+import { toggleMenu, updateNavbarForUser } from "../ui/navbar.js";
+import {
+  showLogoutButtonIfLoggedIn,
+  setupLogoutFunctionality,
+} from "../ui/logout.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
+  showLogoutButtonIfLoggedIn();
+  setupLogoutFunctionality();
 });
 updateNavbarForUser();
 import { API_KEY } from "../api/auth.js";

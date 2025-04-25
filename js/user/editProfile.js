@@ -1,8 +1,15 @@
 import { API_KEY } from "../api/auth.js";
-import { toggleMenu } from "../ui/navbar.js";
+import { toggleMenu, updateNavbarForUser } from "../ui/navbar.js";
+import {
+  showLogoutButtonIfLoggedIn,
+  setupLogoutFunctionality,
+} from "../ui/logout.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
+  updateNavbarForUser();
+  showLogoutButtonIfLoggedIn();
+  setupLogoutFunctionality();
 });
 
 const container = document.getElementById("profileContainer");
