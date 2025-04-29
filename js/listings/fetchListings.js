@@ -32,16 +32,21 @@ export function buildUI() {
     "sm:w-auto"
   );
 
-  // Sorteringsalternativer
-  const sortOption1 = document.createElement("option");
-  sortOption1.value = "end";
-  sortOption1.textContent = "Sort after end date";
-  sortSelect.appendChild(sortOption1);
+  const sortOptions = [
+    { value: "newest", label: "Newest First" },
+    { value: "oldest", label: "Oldest First" },
+    { value: "mostBids", label: "Most Bids" },
+    { value: "fewestBids", label: "Fewest Bids" },
+    { value: "highestBid", label: "Highest Bid" },
+    { value: "lowestBid", label: "Lowest Bid" },
+  ];
 
-  const sortOption2 = document.createElement("option");
-  sortOption2.value = "bid";
-  sortOption2.textContent = "Sort after highest bid";
-  sortSelect.appendChild(sortOption2);
+  sortOptions.forEach((option) => {
+    const opt = document.createElement("option");
+    opt.value = option.value;
+    opt.textContent = option.label;
+    sortSelect.appendChild(opt);
+  });
 
   app.appendChild(sortSelect);
 
@@ -89,7 +94,7 @@ async function fetchListings() {
   try {
     const response = await fetch(apiUrl);
     const result = await response.json();
-    allListings = result.data; // Henter annonser fra API
+    allListings = result.data;
     applyFilters();
   } catch (error) {
     console.error("Error fetching listings:", error);
@@ -105,16 +110,28 @@ function applyFilters() {
   filteredListings = allListings
     .filter((listing) => listing.title.toLowerCase().includes(searchTerm))
     .sort((a, b) => {
-      if (sortBy === "bid") {
-        const aBid = a.bids?.length
-          ? Math.max(...a.bids.map((b) => b.amount))
-          : 0;
-        const bBid = b.bids?.length
-          ? Math.max(...b.bids.map((b) => b.amount))
-          : 0;
-        return bBid - aBid;
-      } else {
-        return new Date(a.endsAt) - new Date(b.endsAt);
+      const aBid = a.bids?.length
+        ? Math.max(...a.bids.map((b) => b.amount))
+        : 0;
+      const bBid = b.bids?.length
+        ? Math.max(...b.bids.map((b) => b.amount))
+        : 0;
+
+      switch (sortBy) {
+        case "newest":
+          return new Date(b.created) - new Date(a.created);
+        case "oldest":
+          return new Date(a.created) - new Date(b.created);
+        case "mostBids":
+          return (b.bids?.length || 0) - (a.bids?.length || 0);
+        case "fewestBids":
+          return (a.bids?.length || 0) - (b.bids?.length || 0);
+        case "highestBid":
+          return bBid - aBid;
+        case "lowestBid":
+          return aBid - bBid;
+        default:
+          return 0;
       }
     });
 
@@ -229,13 +246,12 @@ export function displayListings() {
     );
 
     bidButton.addEventListener("click", (event) => {
-      event.preventDefault(); // Hindrer automatisk oppdatering av siden
+      event.preventDefault();
       placeBid(listing.id);
     });
 
     listingElement.appendChild(bidButton);
 
-    // Legge til "More Info"-knapp
     const moreInfoButton = document.createElement("button");
     moreInfoButton.textContent = "More Info";
     moreInfoButton.classList.add(
@@ -259,6 +275,7 @@ export function displayListings() {
 
   updatePagination();
 }
+
 import { getAccessToken } from "../api/auth.js";
 import { API_KEY } from "../api/auth.js";
 
@@ -278,7 +295,6 @@ async function placeBid(id) {
     return;
   }
 
-  // Hent access token
   const token = getAccessToken();
   if (!token) {
     alert("You are not authenticated.");

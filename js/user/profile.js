@@ -19,7 +19,7 @@ const apiKey = API_KEY;
 
 if (!token || !userName || !apiKey) {
   const errorMsg = document.createElement("p");
-  errorMsg.textContent = "Du må være logget inn for å se denne siden.";
+  errorMsg.textContent = "You must be logged in to view your profile.";
   errorMsg.className = "text-red-500";
   container.appendChild(errorMsg);
 } else {
@@ -117,7 +117,6 @@ function fetchListings(userName) {
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log(data); // Logg data for å sjekke innholdet
       const listings = data.data;
 
       if (listings.length === 0) {

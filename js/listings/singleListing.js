@@ -274,7 +274,7 @@ function displayListing(data) {
 
           if (response.status === 204) {
             alert("Listing deleted successfully.");
-            window.location.href = "/";
+            window.location.href = "/html/profile.html";
           } else {
             const error = await response.json();
             throw new Error(error.errors?.[0]?.message || "Delete failed");
@@ -289,6 +289,6 @@ function displayListing(data) {
     ownerControls.appendChild(deleteButton);
     wrapper.appendChild(ownerControls);
   } else {
-    console.warn("Innlogget bruker er ikke eier av annonsen.");
+    console.warn("Logged in user is not the owner of this listing.");
   }
 }
