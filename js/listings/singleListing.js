@@ -118,7 +118,8 @@ function displayListing(data) {
   if (data.bids && data.bids.length > 0) {
     data.bids.forEach((bid) => {
       const bidItem = document.createElement("p");
-      bidItem.textContent = `${bid.bidderName} bid ${bid.amount} kr`;
+      const bidderName = bid.bidder?.name || "Anonymous";
+      bidItem.textContent = `${bidderName} bid ${bid.amount} kr`;
       bidItem.classList.add("text-gray-200");
       bids.appendChild(bidItem);
     });
