@@ -27,7 +27,8 @@ function getValues() {
   const password = document.getElementById("password").value.trim();
   const email = document.getElementById("email").value.trim();
   const bio = document.getElementById("bio")?.value.trim() || null;
-  const avatarUrl = document.getElementById("avatar")?.value.trim() || null;
+  const avatar = document.getElementById("avatar")?.value.trim() || null;
+  const banner = document.getElementById("banner")?.value.trim() || null;
 
   let isValid = true;
 
@@ -49,18 +50,24 @@ function getValues() {
     isValid = false;
   }
 
-  return isValid ? { name, password, email, bio, avatarUrl } : null;
+  return isValid ? { name, password, email, bio, avatar, banner } : null;
 }
 
-function createRequestBody({ name, email, password, bio, avatarUrl }) {
+function createRequestBody({ name, email, password, bio, avatar, banner }) {
   return {
     name,
     email,
     password,
     bio: bio ?? "Default bio",
-    avatar: avatarUrl
-      ? { url: avatarUrl, alt: "User avatar" }
-      : { url: "placeholder.png", alt: "Default avatar" },
+    avatar: {
+      url: avatar || "https://via.placeholder.com/150",
+      alt: "User avatar",
+    },
+    banner: {
+      url: banner || "https://via.placeholder.com/600x200",
+      alt: "User banner",
+    },
+    venueManager: true,
   };
 }
 

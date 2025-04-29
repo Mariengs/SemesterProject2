@@ -216,7 +216,6 @@ export function displayListings() {
     bidAmount.appendChild(document.createTextNode(`${highestBid} kr`));
     listingElement.appendChild(bidAmount);
 
-    // Legge til "By på annonse"-knapp
     const bidButton = document.createElement("button");
     bidButton.textContent = "Bid on Listing";
     bidButton.classList.add(
@@ -228,7 +227,11 @@ export function displayListings() {
       "mt-4",
       "w-full"
     );
-    bidButton.addEventListener("click", () => placeBid(listing.id));
+
+    bidButton.addEventListener("click", (event) => {
+      event.preventDefault(); // Hindrer automatisk oppdatering av siden
+      placeBid(listing.id);
+    });
 
     listingElement.appendChild(bidButton);
 
@@ -257,6 +260,8 @@ export function displayListings() {
   updatePagination();
 }
 import { getAccessToken } from "../api/auth.js";
+import { API_KEY } from "../api/auth.js";
+
 const id = new URLSearchParams(window.location.search).get("id");
 
 async function placeBid(id) {
@@ -273,6 +278,13 @@ async function placeBid(id) {
     return;
   }
 
+  // Hent access token
+  const token = getAccessToken();
+  if (!token) {
+    alert("You are not authenticated.");
+    return;
+  }
+
   try {
     const response = await fetch(
       `https://v2.api.noroff.dev/auction/listings/${id}/bids`,
@@ -280,7 +292,8 @@ async function placeBid(id) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${getAccessToken()}`, // Sørg for at denne funksjonen returnerer riktig token
+          Authorization: `Bearer ${token}`,
+          "X-Noroff-API-Key": API_KEY,
         },
         body: JSON.stringify({
           amount: parseFloat(bidAmount),
@@ -290,11 +303,10 @@ async function placeBid(id) {
 
     if (response.ok) {
       alert("Your bid has been placed successfully.");
-      // fetchListings(); // Oppdater annonsene etter budet, hvis nødvendig
     } else {
-      const errorData = await response.json(); // Henter feilresponsen fra API-et
+      const errorData = await response.json();
       console.error("API Error:", errorData);
-      alert("Failed to place bid. Reason: " + errorData.message); // Vist spesifikk feilmelding
+      alert("Failed to place bid. Reason: " + errorData.message);
     }
   } catch (error) {
     console.error("Error placing bid:", error);
