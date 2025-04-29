@@ -3,6 +3,7 @@ import {
   setupLogoutFunctionality,
   showLogoutButtonIfLoggedIn,
 } from "../ui/logout.js";
+import { API_KEY } from "../api/auth.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
@@ -59,7 +60,6 @@ function displayListing(data) {
   title.textContent = data.title;
   title.classList.add("text-3xl", "font-bold", "text-white", "mb-4");
 
-  // Bildegalleri container
   const imageGallery = document.createElement("div");
   imageGallery.classList.add("flex", "flex-wrap", "gap-4", "mb-4");
 
@@ -74,7 +74,7 @@ function displayListing(data) {
         "h-auto",
         "rounded-md",
         "object-cover",
-        "max-w-full" // Ensures the image doesn't exceed the container width
+        "max-w-full"
       );
       imageGallery.appendChild(img);
     });
@@ -130,7 +130,7 @@ function displayListing(data) {
   }
 
   wrapper.appendChild(title);
-  wrapper.appendChild(imageGallery); // <-- Her legger vi til galleriet
+  wrapper.appendChild(imageGallery);
   wrapper.appendChild(description);
   wrapper.appendChild(seller);
   wrapper.appendChild(endsAt);
@@ -138,15 +138,21 @@ function displayListing(data) {
 
   container.appendChild(wrapper);
 
-  const currentUser = localStorage.getItem("profileName");
+  // Brukerdata og token fra localStorage
+  const profile = JSON.parse(localStorage.getItem("profile"));
+  const currentUser = profile?.name;
   const accessToken = localStorage.getItem("accessToken");
 
-  // Only show edit/delete buttons for the listing's owner
-  if (currentUser === data.seller.name) {
+  // Debugging logs
+  console.log("Logged in user:", currentUser);
+  console.log("Listing seller:", data.seller?.name);
+
+  if (!currentUser) {
+    console.warn("Ingen bruker funnet i localStorage.");
+  } else if (currentUser.toLowerCase() === data.seller.name.toLowerCase()) {
     const ownerControls = document.createElement("div");
     ownerControls.classList.add("mt-6", "flex", "gap-4");
 
-    // Edit button
     const editButton = document.createElement("button");
     editButton.textContent = "Edit listing";
     editButton.classList.add(
@@ -158,6 +164,7 @@ function displayListing(data) {
       "px-4",
       "rounded"
     );
+
     editButton.addEventListener("click", () => {
       const form = document.createElement("form");
       form.classList.add("mt-4", "space-y-4");
@@ -218,6 +225,7 @@ function displayListing(data) {
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${accessToken}`,
+                "X-Noroff-API-Key": API_KEY,
               },
               body: JSON.stringify(updatedData),
             }
@@ -235,10 +243,9 @@ function displayListing(data) {
         }
       });
 
-      editButton.disabled = true; // prevent multiple forms
+      editButton.disabled = true;
     });
 
-    // Delete button
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete listing";
     deleteButton.classList.add(
@@ -260,13 +267,14 @@ function displayListing(data) {
               method: "DELETE",
               headers: {
                 Authorization: `Bearer ${accessToken}`,
+                "X-Noroff-API-Key": API_KEY,
               },
             }
           );
 
           if (response.status === 204) {
             alert("Listing deleted successfully.");
-            window.location.href = "/"; // Endre evt. til ønsket redirect
+            window.location.href = "/";
           } else {
             const error = await response.json();
             throw new Error(error.errors?.[0]?.message || "Delete failed");
@@ -280,5 +288,7 @@ function displayListing(data) {
     ownerControls.appendChild(editButton);
     ownerControls.appendChild(deleteButton);
     wrapper.appendChild(ownerControls);
+  } else {
+    console.warn("Innlogget bruker er ikke eier av annonsen.");
   }
 }

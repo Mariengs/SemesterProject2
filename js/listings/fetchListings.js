@@ -80,8 +80,8 @@ export function buildUI() {
   app.appendChild(paginationWrapper);
 }
 
-let allListings = [];
-let filteredListings = [];
+export let allListings = [];
+export let filteredListings = [];
 let currentPage = 1;
 const listingsPerPage = 21;
 
@@ -184,7 +184,7 @@ export function displayListings() {
 
     const description = document.createElement("p");
     description.classList.add("text-gray-400", "mb-4");
-    description.textContent = listing.description || "Ingen beskrivelse.";
+    description.textContent = listing.description || "No description.";
     listingElement.appendChild(description);
 
     const endTime = document.createElement("div");
@@ -216,11 +216,90 @@ export function displayListings() {
     bidAmount.appendChild(document.createTextNode(`${highestBid} kr`));
     listingElement.appendChild(bidAmount);
 
+    // Legge til "By på annonse"-knapp
+    const bidButton = document.createElement("button");
+    bidButton.textContent = "Bid on Listing";
+    bidButton.classList.add(
+      "bg-blue-500",
+      "text-white",
+      "px-4",
+      "py-2",
+      "rounded-md",
+      "mt-4",
+      "w-full"
+    );
+    bidButton.addEventListener("click", () => placeBid(listing.id));
+
+    listingElement.appendChild(bidButton);
+
+    // Legge til "More Info"-knapp
+    const moreInfoButton = document.createElement("button");
+    moreInfoButton.textContent = "More Info";
+    moreInfoButton.classList.add(
+      "bg-gray-500",
+      "text-white",
+      "px-4",
+      "py-2",
+      "rounded-md",
+      "mt-4",
+      "w-full"
+    );
+    moreInfoButton.addEventListener("click", () => {
+      window.location.href = `/html/single-listing.html?id=${listing.id}`;
+    });
+
+    listingElement.appendChild(moreInfoButton);
+
     linkWrapper.appendChild(listingElement);
     listingsContainer.appendChild(linkWrapper);
   });
 
   updatePagination();
+}
+import { getAccessToken } from "../api/auth.js";
+const id = new URLSearchParams(window.location.search).get("id");
+
+async function placeBid(id) {
+  if (!id) {
+    console.error("No listing ID provided.");
+    alert("No listing ID provided.");
+    return;
+  }
+
+  const bidAmount = prompt("Enter your bid amount:");
+
+  if (!bidAmount || isNaN(bidAmount) || parseFloat(bidAmount) <= 0) {
+    alert("Please enter a valid bid amount.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://v2.api.noroff.dev/auction/listings/${id}/bids`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAccessToken()}`, // Sørg for at denne funksjonen returnerer riktig token
+        },
+        body: JSON.stringify({
+          amount: parseFloat(bidAmount),
+        }),
+      }
+    );
+
+    if (response.ok) {
+      alert("Your bid has been placed successfully.");
+      // fetchListings(); // Oppdater annonsene etter budet, hvis nødvendig
+    } else {
+      const errorData = await response.json(); // Henter feilresponsen fra API-et
+      console.error("API Error:", errorData);
+      alert("Failed to place bid. Reason: " + errorData.message); // Vist spesifikk feilmelding
+    }
+  } catch (error) {
+    console.error("Error placing bid:", error);
+    alert("An error occurred while placing your bid.");
+  }
 }
 
 function updatePagination() {

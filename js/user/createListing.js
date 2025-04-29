@@ -6,6 +6,10 @@ import {
   setupLogoutFunctionality,
 } from "../ui/logout.js";
 
+// Globale variabler for annonser
+let allListings = [];
+let filteredListings = [];
+
 document.addEventListener("DOMContentLoaded", () => {
   toggleMenu();
   updateNavbarForUser();
@@ -142,4 +146,42 @@ function fetchUserListings() {
       message.textContent = `Failed to fetch listings: ${error.message}`;
       message.classList.add("text-red-500");
     });
+}
+
+// Funksjon for å filtrere og vise annonser
+function applyFilters() {
+  // For å filtrere og vise annonser, kan du bruke den eksisterende logikken i koden din:
+  filteredListings = allListings; // Ikke filtrer for nå, eller legg til ønsket filter
+
+  // Vis annonser basert på filtrering
+  displayListings();
+}
+
+// Funksjon for å vise annonser
+function displayListings() {
+  const listingsContainer = document.getElementById("listings-container");
+  listingsContainer.innerHTML = ""; // Tøm eksisterende innhold
+
+  filteredListings.forEach((listing) => {
+    const listingCard = document.createElement("div");
+    listingCard.className = "listing-card";
+
+    const listingTitle = document.createElement("h3");
+    listingTitle.textContent = listing.title;
+    listingCard.appendChild(listingTitle);
+
+    const listingDescription = document.createElement("p");
+    listingDescription.textContent = listing.description;
+    listingCard.appendChild(listingDescription);
+
+    const listingLink = document.createElement("a");
+    listingLink.textContent = "View Listing";
+    listingLink.setAttribute(
+      "href",
+      `/html/single-listing.html?id=${listing.id}`
+    );
+    listingCard.appendChild(listingLink);
+
+    listingsContainer.appendChild(listingCard);
+  });
 }

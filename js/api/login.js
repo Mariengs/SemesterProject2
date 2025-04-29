@@ -28,16 +28,17 @@ loginForm.addEventListener("submit", async (event) => {
     const result = await response.json();
 
     if (response.ok) {
-      const { accessToken, name, credits } = result.data;
+      const { accessToken, ...profile } = result.data;
 
-      // Lagre data i localStorage
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("userName", name);
-      localStorage.setItem("credits", credits);
+      localStorage.setItem("profile", JSON.stringify(profile));
 
+      // Extra values for qucik access
+      localStorage.setItem("userName", profile.name);
+      localStorage.setItem("credits", profile.credits);
       localStorage.setItem("apiKey", API_KEY);
 
-      alert(`Welcome, ${name}!`);
+      alert(`Welcome, ${profile.name}!`);
       window.location.href = "/";
     } else {
       alert(result.errors?.[0]?.message || "Login failed.");
