@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const container = document.getElementById("listing-container");
 
-// Get ID from URL (e.g. ?id=123)
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
@@ -139,14 +138,9 @@ function displayListing(data) {
 
   container.appendChild(wrapper);
 
-  // Brukerdata og token fra localStorage
   const profile = JSON.parse(localStorage.getItem("profile"));
   const currentUser = profile?.name;
   const accessToken = localStorage.getItem("accessToken");
-
-  // Debugging logs
-  console.log("Logged in user:", currentUser);
-  console.log("Listing seller:", data.seller?.name);
 
   if (!currentUser) {
     console.warn("Ingen bruker funnet i localStorage.");
