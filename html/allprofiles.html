@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" src="../js/user/allProfiles.js"></script>
+    <link rel="stylesheet" href="/src/main.css" />
+    <title>Alle profiler</title>
+  </head>
+  <body class="bg-gray-900 text-white flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <header class="bg-gray-800 shadow-md">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
+            Auction House
+          </div>
+
+          <!-- Burger Menu (Mobile) -->
+          <div class="md:hidden">
+            <button id="menu-toggle" class="text-gray-200 focus:outline-none">
+              ☰
+            </button>
+          </div>
+
+          <!-- Nav Links (Desktop) -->
+          <div class="hidden md:flex space-x-6">
+            <a
+              href="/"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Home</a
+            >
+            <a
+              href="/html/register.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Register</a
+            >
+            <a
+              href="/html/login.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Login</a
+            >
+            <a
+              href="/html/allprofiles.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >All profiles</a
+            >
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
+          <a href="/" class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Home</a
+          >
+          <a
+            href="/html/register.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Register</a
+          >
+          <a
+            href="/html/login.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Login</a
+          >
+          <a
+            href="/html/allprofiles.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >All Profiles</a
+          >
+        </div>
+      </nav>
+    </header>
+    <h1>All profiles</h1>
+    <div id="profiles-container"></div>
+  </body>
+</html>

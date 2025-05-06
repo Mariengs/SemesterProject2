@@ -143,7 +143,7 @@ function displayListing(data) {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!currentUser) {
-    console.warn("Ingen bruker funnet i localStorage.");
+    console.warn("No user found in localStorage.");
   } else if (currentUser.toLowerCase() === data.seller.name.toLowerCase()) {
     const ownerControls = document.createElement("div");
     ownerControls.classList.add("mt-6", "flex", "gap-4");

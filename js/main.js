@@ -12,6 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLogoutFunctionality();
 });
 
-window.addEventListener("listingCreated", () => {
-  fetchListings(); // Hent de nyeste oppdaterte innleggene etter at en annonse er lagt til
-});
+// window.addEventListener("listingCreated", () => {
+//   fetchListings();
+// });

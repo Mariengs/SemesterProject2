@@ -1,5 +1,3 @@
-// listings.js
-
 import { getAccessToken, API_KEY } from "../api/auth.js";
 
 const apiUrl = "https://v2.api.noroff.dev/auction/listings";
@@ -7,6 +5,121 @@ let allListings = [];
 let filteredListings = [];
 let currentPage = 1;
 const listingsPerPage = 21;
+let timerInterval; // Flytt her for global tilgjengelighet i denne filen
+
+// Funksjon for å plassere et bud på en annonse
+async function placeBid(listingId) {
+  // Opprett modalen som vises midt på skjermen
+  const modal = document.createElement("div");
+  modal.id = "bidModal";
+  modal.classList.add(
+    "fixed",
+    "top-0",
+    "left-0",
+    "w-full",
+    "h-full",
+    "bg-gray-800",
+    "bg-opacity-50",
+    "flex",
+    "justify-center",
+    "items-center"
+  );
+
+  // Modalinnhold
+  const modalContent = document.createElement("div");
+  modalContent.classList.add("bg-gray-900", "p-8", "rounded-lg", "w-96");
+  modal.appendChild(modalContent);
+
+  // Legg til modalinnhold
+  const title = document.createElement("h3");
+  title.classList.add("text-2xl", "text-center", "text-white", "mb-4");
+  title.textContent = "Place Your Bid";
+
+  const description = document.createElement("p");
+  description.classList.add("text-center", "text-gray-400", "mb-4");
+  description.textContent = "Enter your bid amount for this listing.";
+
+  const bidInput = document.createElement("input");
+  bidInput.type = "number";
+  bidInput.id = "bidAmount";
+  bidInput.classList.add("w-full", "p-2", "rounded-md", "mb-4", "text-black");
+  bidInput.placeholder = "Enter bid amount";
+  bidInput.min = 1;
+
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("flex", "justify-between");
+
+  const placeBidButton = document.createElement("button");
+  placeBidButton.textContent = "Place Bid";
+  placeBidButton.classList.add(
+    "bg-blue-500",
+    "text-white",
+    "px-4",
+    "py-2",
+    "rounded-md"
+  );
+
+  const cancelButton = document.createElement("button");
+  cancelButton.textContent = "Cancel";
+  cancelButton.classList.add(
+    "bg-red-500",
+    "text-white",
+    "px-4",
+    "py-2",
+    "rounded-md"
+  );
+
+  buttonContainer.append(placeBidButton, cancelButton);
+  modalContent.append(title, description, bidInput, buttonContainer);
+  document.body.appendChild(modal);
+
+  // Lukke modal
+  cancelButton.addEventListener("click", () => {
+    document.body.removeChild(modal); // Fjern modal fra DOM
+  });
+
+  // Håndter innsending av bud
+  placeBidButton.addEventListener("click", async () => {
+    const bidAmount = parseFloat(document.getElementById("bidAmount").value);
+    if (isNaN(bidAmount) || bidAmount <= 0) {
+      alert("Please enter a valid bid amount.");
+      return;
+    }
+
+    const token = getAccessToken();
+    if (!token) {
+      alert("You are not authenticated.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/${listingId}/bids`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "X-Noroff-API-Key": API_KEY,
+        },
+        body: JSON.stringify({ amount: bidAmount }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Your bid has been placed successfully.");
+        fetchListings(); // Oppdater listen etter å ha plassert budet
+      } else {
+        alert(result.message || "Error placing bid.");
+      }
+
+      // Lukk modal etter at budet er plassert
+      document.body.removeChild(modal);
+    } catch (error) {
+      alert("Failed to place bid: " + error.message);
+      console.error("Error placing bid:", error);
+    }
+  });
+}
 
 // UI-bygging
 export function buildUI() {
@@ -78,6 +191,7 @@ export function buildUI() {
   const prevPage = document.createElement("button");
   prevPage.id = "prevPage";
   prevPage.textContent = "Previous";
+  prevPage.classList.add("bg-gray-700", "text-white", "p-2", "rounded-md");
 
   const pageInfo = document.createElement("span");
   pageInfo.id = "pageInfo";
@@ -86,6 +200,7 @@ export function buildUI() {
   const nextPage = document.createElement("button");
   nextPage.id = "nextPage";
   nextPage.textContent = "Next";
+  nextPage.classList.add("bg-gray-700", "text-white", "p-2", "rounded-md");
 
   paginationWrapper.append(prevPage, pageInfo, nextPage);
   app.appendChild(paginationWrapper);
@@ -113,34 +228,32 @@ function applyFilters() {
     listing.title.toLowerCase().includes(searchTerm)
   );
 
-  // Sorter annonser slik at de som er aktive (første bud kan legges) vises først
+  // Sorter annonser
   filteredListings.sort((a, b) => {
-    const isAActive = new Date(a.endsAt) > new Date(); // Sjekker om annonse a er aktiv
-    const isBActive = new Date(b.endsAt) > new Date(); // Sjekker om annonse b er aktiv
+    const isAActive = new Date(a.endsAt) > new Date();
+    const isBActive = new Date(b.endsAt) > new Date();
 
-    // De som er aktive skal vises først
-    if (isAActive && !isBActive) return -1; // a er aktiv, b er ikke
-    if (!isAActive && isBActive) return 1; // b er aktiv, a er ikke
+    if (isAActive && !isBActive) return -1;
+    if (!isAActive && isBActive) return 1;
 
-    // Hvis begge er aktive eller begge er inaktive, sorter etter valgt kriterium
     const aBid = a.bids?.length ? Math.max(...a.bids.map((b) => b.amount)) : 0;
     const bBid = b.bids?.length ? Math.max(...b.bids.map((b) => b.amount)) : 0;
 
     switch (sortBy) {
       case "newest":
-        return new Date(b.created) - new Date(a.created); // Nyeste først
+        return new Date(b.created) - new Date(a.created);
       case "oldest":
-        return new Date(a.created) - new Date(b.created); // Eldste først
+        return new Date(a.created) - new Date(b.created);
       case "mostBids":
-        return (b.bids?.length || 0) - (a.bids?.length || 0); // Mest bud
+        return (b.bids?.length || 0) - (a.bids?.length || 0);
       case "fewestBids":
-        return (a.bids?.length || 0) - (b.bids?.length || 0); // Færrest bud
+        return (a.bids?.length || 0) - (b.bids?.length || 0);
       case "highestBid":
-        return bBid - aBid; // Høyeste bud først
+        return bBid - aBid;
       case "lowestBid":
-        return aBid - bBid; // Laveste bud først
+        return aBid - bBid;
       default:
-        return 0; // Ingen sortering
+        return 0;
     }
   });
 
@@ -195,11 +308,30 @@ function displayListings() {
     description.classList.add("text-gray-400", "mb-4");
     description.textContent = listing.description || "No description.";
 
-    const endTime = document.createElement("div");
-    endTime.classList.add("text-gray-300", "mb-4");
-    endTime.innerHTML = `<strong>Ends:</strong> ${new Date(
-      listing.endsAt
-    ).toLocaleString()}`;
+    const countdownContainer = document.createElement("div");
+    countdownContainer.classList.add("text-gray-300", "mb-4");
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const endTime = new Date(listing.endsAt).getTime();
+      const distance = endTime - now;
+
+      if (distance < 0) {
+        countdownContainer.textContent = "Auction ended";
+        clearInterval(timerInterval);
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        countdownContainer.textContent = `Time left: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }
+    }
+
+    updateCountdown();
+    timerInterval = setInterval(updateCountdown, 1000);
 
     const highestBid = listing.bids?.length
       ? Math.max(...listing.bids.map((b) => b.amount))
@@ -248,65 +380,22 @@ function displayListings() {
       img,
       title,
       description,
-      endTime,
+      countdownContainer,
       bidDisplay,
       bidButton,
       infoButton
     );
-    listingsContainer.appendChild(card); // fjernet <a>-lenken
+    listingsContainer.appendChild(card);
   });
 
   updatePagination();
-}
-
-// Budgivning
-async function placeBid(id) {
-  if (!id) return alert("No listing ID provided.");
-
-  const bidAmount = prompt("Enter your bid amount:");
-  if (!bidAmount || isNaN(bidAmount) || parseFloat(bidAmount) <= 0) {
-    return alert("Please enter a valid bid amount.");
-  }
-
-  const token = getAccessToken();
-  if (!token) return alert("You are not authenticated.");
-
-  // Logg bidAmount for å se hva som sendes
-  console.log("Placing bid for listing:", id);
-  console.log("Bid amount:", bidAmount);
-
-  try {
-    const response = await fetch(`${apiUrl}/${id}/bids`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        "X-Noroff-API-Key": API_KEY,
-      },
-      body: JSON.stringify({ amount: parseFloat(bidAmount) }),
-    });
-
-    const result = await response.json();
-
-    // Logg resultatet fra API-et
-    console.log("API Response:", result);
-
-    if (response.ok) {
-      alert("Your bid has been placed successfully.");
-    } else {
-      throw new Error(result.message || "Unknown error.");
-    }
-  } catch (error) {
-    alert("Failed to place bid: " + error.message);
-    console.error("Error placing bid:", error);
-  }
 }
 
 // Paginering
 function updatePagination() {
   const pageInfo = document.getElementById("pageInfo");
   const totalPages = Math.ceil(filteredListings.length / listingsPerPage);
-  pageInfo.textContent = `Side ${currentPage} av ${totalPages}`;
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
   document.getElementById("prevPage").disabled = currentPage === 1;
   document.getElementById("nextPage").disabled = currentPage === totalPages;
 }
@@ -314,6 +403,13 @@ function updatePagination() {
 // Event listeners
 document.addEventListener("DOMContentLoaded", () => {
   buildUI();
+  fetchListings();
+
+  window.addEventListener("listingCreated", () => {
+    console.log("New listing created, fetching listings again...");
+    fetchListings(); // Hent nye annonser etter opprettelse
+  });
+
   document.getElementById("searchInput").addEventListener("input", () => {
     currentPage = 1;
     applyFilters();
@@ -328,6 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentPage > 1) {
       currentPage--;
       displayListings();
+      updatePagination();
     }
   });
 
@@ -336,8 +433,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentPage < totalPages) {
       currentPage++;
       displayListings();
+      updatePagination();
+      window.scrollTo(0, 0);
     }
   });
-
-  fetchListings();
 });

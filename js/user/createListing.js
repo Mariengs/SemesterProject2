@@ -63,10 +63,9 @@ form?.addEventListener("submit", async (e) => {
         const event = new CustomEvent("listingCreated", {
           detail: { message: "New listing created!" },
         });
-        window.dispatchEvent(event); // Send hendelsen til window
+        window.dispatchEvent(event);
 
-        // Omdiriger til index.html etter 1,5 sek
-        window.location.href = "/html/profile.html";
+        window.location.href = "/";
       }, 1000);
     } else {
       throw new Error(
