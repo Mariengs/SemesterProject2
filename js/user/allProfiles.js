@@ -10,15 +10,75 @@ document.addEventListener("DOMContentLoaded", function () {
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
+
+  createSearchField();
+  createProfilesContainer();
+
+  const searchInput = document.getElementById("search-input");
+
+  searchInput.addEventListener("input", function () {
+    const query = searchInput.value.trim();
+    fetchProfiles(query);
+  });
+
+  // Initial fetch for profiles without any search query
+  fetchProfiles();
 });
 
-async function fetchProfiles() {
+// Dynamisk opprette søkefeltet
+function createSearchField() {
+  const searchContainer = document.createElement("div");
+  searchContainer.classList.add("p-4");
+
+  const inputField = document.createElement("input");
+  inputField.setAttribute("type", "text");
+  inputField.setAttribute("id", "search-input");
+  inputField.setAttribute("placeholder", "Search by username...");
+  inputField.classList.add(
+    "p-2",
+    "w-full",
+    "border",
+    "border-gray-300",
+    "rounded-md",
+    "text-gray-900"
+  );
+
+  searchContainer.appendChild(inputField);
+  document.body.insertBefore(
+    searchContainer,
+    document.getElementById("profiles-container")
+  );
+}
+
+// Dynamisk opprette container for profiler
+function createProfilesContainer() {
+  const container = document.createElement("div");
+  container.setAttribute("id", "profiles-container");
+  container.classList.add(
+    "grid",
+    "grid-cols-1",
+    "sm:grid-cols-2",
+    "md:grid-cols-3",
+    "lg:grid-cols-4",
+    "gap-6",
+    "p-4"
+  );
+
+  document.body.appendChild(container);
+}
+
+async function fetchProfiles(query = "") {
   const token = localStorage.getItem("accessToken");
   if (!token) {
     throw new Error("Token ikke funnet. Vennligst logg inn.");
   }
 
-  const response = await fetch("https://v2.api.noroff.dev/auction/profiles", {
+  let url = "https://v2.api.noroff.dev/auction/profiles";
+  if (query) {
+    url = `https://v2.api.noroff.dev/auction/profiles/search?q=${query}`;
+  }
+
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -35,10 +95,9 @@ async function fetchProfiles() {
     throw new Error("Ingen profiler funnet");
   }
 
-  return data.data;
+  displayProfiles(data.data); // Vis profiler basert på resultatene
 }
 
-// Funksjon for å vise profiler på siden
 function displayProfiles(profiles) {
   const container = document.getElementById("profiles-container");
   container.innerHTML = ""; // Tømmer containeren før ny data vises
@@ -99,10 +158,3 @@ function displayProfiles(profiles) {
     container.appendChild(profileDiv);
   });
 }
-
-// Initialiser funksjonen for å hente profiler og vise dem
-fetchProfiles()
-  .then((profiles) => displayProfiles(profiles))
-  .catch((error) => {
-    console.error("Error fetching profiles:", error);
-  });
