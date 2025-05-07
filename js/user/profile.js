@@ -144,11 +144,46 @@ function displayError(container, message) {
 
 // Utility: Create section wrappers
 function createSectionWrapper(parent, id) {
-  const wrapper = document.createElement("div");
-  wrapper.id = id;
-  wrapper.className = "mt-8";
+  const wrapper = document.createElement("section");
+  wrapper.className =
+    "mt-8 bg-gray-900 rounded-lg shadow-lg border border-gray-700 overflow-hidden";
+
+  const header = document.createElement("button");
+  header.className =
+    "w-full text-left px-6 py-4 bg-gray-800 hover:bg-gray-700 text-xl font-semibold text-white flex justify-between items-center focus:outline-none";
+  header.setAttribute("aria-expanded", "true");
+
+  const title =
+    {
+      myListings: "My Listings",
+      myBids: "Listings I've Bid On",
+      wonBids: "Auctions I've Won",
+    }[id] || "Section";
+
+  const titleSpan = document.createElement("span");
+  titleSpan.textContent = title;
+
+  const icon = document.createElement("span");
+  icon.textContent = "−"; // starts open
+  icon.className = "text-lg transition-transform duration-200";
+
+  header.append(titleSpan, icon);
+  wrapper.appendChild(header);
+
+  const content = document.createElement("div");
+  content.id = id;
+  content.className = "px-6 pb-6 pt-4";
+  wrapper.appendChild(content);
+
+  header.addEventListener("click", () => {
+    const expanded = header.getAttribute("aria-expanded") === "true";
+    header.setAttribute("aria-expanded", String(!expanded));
+    content.classList.toggle("hidden", expanded);
+    icon.textContent = expanded ? "+" : "−";
+  });
+
   parent.appendChild(wrapper);
-  return wrapper;
+  return content;
 }
 
 // Fetch and render user listings
@@ -273,129 +308,187 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
 }
 
 // Function to show edit form inline
-function showEditForm(listing, card, token, apiKey) {
-  // Create an edit form with the current values
+function showEditForm(listing, wrapper, token, apiKey) {
   const editForm = document.createElement("form");
   editForm.className = "space-y-4 mt-4 p-4 bg-gray-700 rounded-lg shadow-lg";
 
-  // Title input field
   const titleInput = document.createElement("input");
   titleInput.type = "text";
-  titleInput.value = listing.title;
+  titleInput.value = listing.title || "";
   titleInput.className =
     "w-full p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
   editForm.appendChild(titleInput);
 
-  // Description input field
   const descriptionInput = document.createElement("textarea");
   descriptionInput.value = listing.description || "";
   descriptionInput.className =
     "w-full p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
   editForm.appendChild(descriptionInput);
 
-  // Image URL input field
-  const imageInput = document.createElement("input");
-  imageInput.type = "url";
-  imageInput.value = listing.media?.[0]?.url || "";
-  imageInput.placeholder = "Enter image URL (optional)";
-  imageInput.className =
-    "w-full p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
-  editForm.appendChild(imageInput);
+  const imageContainer = document.createElement("div");
+  imageContainer.className = "space-y-4";
 
-  // Submit button
+  const addImageField = (url = "") => {
+    const fieldWrapper = document.createElement("div");
+    fieldWrapper.className = "flex flex-col space-y-2";
+
+    const inputRow = document.createElement("div");
+    inputRow.className = "flex items-center gap-2";
+
+    const imageInput = document.createElement("input");
+    imageInput.type = "url";
+    imageInput.value = url;
+    imageInput.placeholder = "Enter image URL";
+    imageInput.className =
+      "flex-1 p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "✕";
+    removeBtn.className =
+      "text-white text-lg hover:text-red-400 bg-gray-800 px-2 py-0.5 rounded border border-gray-500";
+    removeBtn.addEventListener("click", () => {
+      fieldWrapper.remove();
+    });
+
+    inputRow.appendChild(imageInput);
+    inputRow.appendChild(removeBtn);
+
+    const previewWrapper = document.createElement("div");
+    previewWrapper.className = "flex justify-center";
+
+    const preview = document.createElement("img");
+    preview.className =
+      "w-[240px] h-[160px] object-cover rounded border border-gray-600 mt-2";
+    preview.style.display = url ? "block" : "none";
+    if (url) preview.src = url;
+
+    imageInput.addEventListener("input", () => {
+      const val = imageInput.value.trim();
+      if (val) {
+        preview.src = val;
+        preview.style.display = "block";
+      } else {
+        preview.style.display = "none";
+      }
+    });
+
+    previewWrapper.appendChild(preview);
+    fieldWrapper.appendChild(inputRow);
+    fieldWrapper.appendChild(previewWrapper);
+    imageContainer.appendChild(fieldWrapper);
+  };
+
+  (listing.media || []).forEach((mediaUrl) => {
+    if (typeof mediaUrl === "string") {
+      addImageField(mediaUrl);
+    } else if (mediaUrl?.url) {
+      addImageField(mediaUrl.url);
+    }
+  });
+
+  if (imageContainer.children.length === 0) {
+    addImageField("");
+  }
+
+  const addImageBtn = document.createElement("button");
+  addImageBtn.type = "button";
+  addImageBtn.textContent = "+ Add more images";
+  addImageBtn.className =
+    "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700";
+  addImageBtn.addEventListener("click", () => addImageField(""));
+
+  editForm.appendChild(imageContainer);
+  editForm.appendChild(addImageBtn);
+
   const submitButton = document.createElement("button");
   submitButton.textContent = "Save Changes";
   submitButton.className =
     "px-4 py-2 bg-blue-500 text-white rounded mt-4 hover:bg-blue-600";
-  submitButton.addEventListener("click", async (e) => {
-    e.preventDefault();
-    try {
-      const updatedFields = {};
 
-      // Only update the title if it's changed
-      if (titleInput.value !== listing.title) {
-        updatedFields.title = titleInput.value;
-      }
-
-      // Only update the description if it's changed
-      if (descriptionInput.value !== listing.description) {
-        updatedFields.description = descriptionInput.value;
-      }
-
-      // Only update the image URL if it's changed
-      const imageUrl = imageInput.value;
-      if (
-        imageUrl &&
-        imageUrl !== listing.media?.[0]?.url &&
-        isValidUrl(imageUrl)
-      ) {
-        updatedFields.media = [{ url: imageUrl }];
-      }
-
-      // If there are no updates, exit
-      if (Object.keys(updatedFields).length === 0) {
-        alert("No changes made.");
-        return;
-      }
-
-      // Send the update request
-      const response = await fetch(
-        `https://v2.api.noroff.dev/auction/listings/${listing.id}`,
-        {
-          method: "PUT", // Use PUT method for updating
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "X-Noroff-API-Key": apiKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedFields),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update the listing.");
-      }
-
-      // Update the card with new values
-      if (updatedFields.title) {
-        listing.title = updatedFields.title;
-        card.querySelector("h3").textContent = listing.title;
-      }
-
-      if (updatedFields.description) {
-        listing.description = updatedFields.description;
-        card.querySelector("p").textContent =
-          listing.description || "No description available.";
-      }
-
-      if (updatedFields.media) {
-        listing.media = updatedFields.media;
-        const updatedImage =
-          listing.media?.[0]?.url || "https://via.placeholder.com/400x300";
-        card.querySelector("img").src = updatedImage;
-      }
-
-      // Remove the edit form
-      editForm.remove();
-    } catch (error) {
-      alert(`Error: ${error.message}`);
-    }
-  });
-  editForm.appendChild(submitButton);
-
-  // Cancel button
   const cancelButton = document.createElement("button");
   cancelButton.textContent = "Cancel";
   cancelButton.type = "button";
   cancelButton.className =
     "px-4 py-2 bg-red-500 text-white rounded mt-4 hover:bg-red-600";
+
+  const btnWrapper = document.createElement("div");
+  btnWrapper.className = "flex justify-center gap-4 mt-4";
+  btnWrapper.appendChild(submitButton);
+  btnWrapper.appendChild(cancelButton);
+
   cancelButton.addEventListener("click", () => {
     editForm.remove();
   });
-  editForm.appendChild(cancelButton);
 
-  // Append the form under the card
-  card.appendChild(editForm);
+  submitButton.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const updatedFields = {};
+    const titleValue = titleInput.value.trim();
+    const descriptionValue = descriptionInput.value.trim();
+
+    // Legg til oppdatering av tittel hvis den er endret
+    if (titleValue && titleValue !== listing.title) {
+      updatedFields.title = titleValue;
+    }
+
+    // Legg til oppdatering av beskrivelse hvis den er endret
+    if ((descriptionValue || "") !== (listing.description || "")) {
+      updatedFields.description = descriptionValue;
+    }
+
+    // Håndtering av media/bilder
+    const imageInputs = imageContainer.querySelectorAll("input[type='url']");
+    const validMedia = Array.from(imageInputs)
+      .map((input) => input.value.trim())
+      .filter((url) => isValidUrl(url)); // Filtrer ut ugyldige URL-er
+
+    // Hvis bildene er endret, oppdater 'media'-feltet med riktige URL-er
+    if (validMedia.length > 0) {
+      updatedFields.media = validMedia.map((url) => ({
+        url: url, // Send url som en string
+        alt: titleValue || listing.title, // Gi et beskrivende alt-tekst (basert på tittel)
+      }));
+    }
+
+    // Hvis ingen endringer er gjort, gi en advarsel og avslutt
+    if (Object.keys(updatedFields).length === 0) {
+      alert("No changes made.");
+      return;
+    }
+
+    try {
+      // Send PUT forespørsel til API-et
+      const res = await fetch(
+        `https://v2.api.noroff.dev/auction/listings/${listing.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "X-Noroff-API-Key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedFields), // Send oppdaterte data
+        }
+      );
+
+      // Sjekk om forespørselen var vellykket
+      if (!res.ok) throw new Error("Failed to update the listing.");
+
+      // Informer brukeren om at oppdateringen var vellykket
+      alert("Listing updated successfully!");
+
+      // Last inn brukerprofilen på nytt for å vise de oppdaterte dataene
+      loadUserProfile(); // Oppdater innholdet på siden
+    } catch (error) {
+      // Håndter eventuelle feil
+      alert(`Error: ${error.message}`);
+    }
+  });
+
+  editForm.appendChild(btnWrapper);
+  wrapper.appendChild(editForm);
 }
 
 // Utility function to check if the URL is valid

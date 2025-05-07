@@ -10,6 +10,8 @@ import {
 const form = document.getElementById("create-listing-form");
 const message = document.getElementById("form-message");
 const listingsContainer = document.getElementById("listings-container");
+const mediaWrapper = document.getElementById("media-wrapper");
+const addImageButton = document.getElementById("add-image-button");
 
 // Initier app
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,6 +19,34 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
+
+  // Legg til ett bildefelt ved første last
+  addImageButton?.click();
+});
+
+// Legg til nytt bilde-felt
+addImageButton?.addEventListener("click", () => {
+  const container = document.createElement("div");
+  container.className = "mt-2";
+
+  const urlInput = document.createElement("input");
+  urlInput.type = "url";
+  urlInput.placeholder = "Image URL";
+  urlInput.className =
+    "w-full p-2 mb-1 rounded bg-gray-800 text-white border border-gray-600";
+  urlInput.required = false;
+
+  const altInput = document.createElement("input");
+  altInput.type = "text";
+  altInput.placeholder = "Image alt text";
+  altInput.className =
+    "w-full p-2 rounded bg-gray-800 text-white border border-gray-600";
+  altInput.required = false;
+
+  container.appendChild(urlInput);
+  container.appendChild(altInput);
+
+  mediaWrapper.appendChild(container);
 });
 
 // Opprett ny annonse
@@ -31,14 +61,23 @@ form?.addEventListener("submit", async (e) => {
 
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
-  const mediaRaw = document.getElementById("media").value.trim();
   let endsAt = document.getElementById("endsAt").value;
 
   endsAt = new Date(endsAt).toISOString();
 
-  const media = mediaRaw
-    ? mediaRaw.split(",").map((url) => ({ url: url.trim(), alt: "" }))
-    : [];
+  // Hent alle bilde-URL-er
+  const mediaContainers = mediaWrapper.querySelectorAll("div");
+  const media = Array.from(mediaContainers)
+    .map((container) => {
+      const inputs = container.querySelectorAll("input");
+      const url = inputs[0]?.value.trim();
+      const alt = inputs[1]?.value.trim() || "";
+      if (url) {
+        return { url, alt };
+      }
+      return null;
+    })
+    .filter((item) => item !== null);
 
   const listingData = { title, description, media, endsAt };
 
@@ -54,17 +93,11 @@ form?.addEventListener("submit", async (e) => {
     });
 
     const result = await response.json();
-    console.log("API Response:", result);
 
     if (response.ok) {
       displayMessage("Listing created successfully! Redirecting...", "green");
       setTimeout(() => {
-        // Send hendelse etter oppretting av annonse
-        const event = new CustomEvent("listingCreated", {
-          detail: { message: "New listing created!" },
-        });
-        window.dispatchEvent(event);
-
+        window.dispatchEvent(new CustomEvent("listingCreated"));
         window.location.href = "/";
       }, 1000);
     } else {
@@ -85,7 +118,7 @@ function displayMessage(text, type) {
     message.classList.add("text-red-500");
   } else if (type === "green") {
     message.classList.add("text-green-500");
-  } else if (type === "gray") {
+  } else {
     message.classList.add("text-gray-500");
   }
 }

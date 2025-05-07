@@ -11,6 +11,20 @@ document.addEventListener("DOMContentLoaded", function () {
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
 
+  const token = localStorage.getItem("accessToken");
+  const authMessage = document.getElementById("auth-message");
+  const profileContainer = document.getElementById("profiles-container");
+
+  if (!token) {
+    if (authMessage) {
+      authMessage.classList.remove("hidden");
+    }
+    if (profileContainer) {
+      profileContainer.classList.add("hidden");
+    }
+    return;
+  }
+
   createSearchField();
   createProfilesContainer();
 
@@ -25,35 +39,59 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchProfiles();
 });
 
-// Dynamisk opprette søkefeltet
+// Create the search input
 function createSearchField() {
-  const searchContainer = document.createElement("div");
-  searchContainer.classList.add("p-4");
+  const wrapper = document.getElementById("profiles-wrapper");
+  if (!wrapper) return;
 
+  const container = document.createElement("div");
+  container.className = "mb-6 max-w-md mx-auto relative";
+
+  // 🔍 Search icon
+  const icon = document.createElement("span");
+  icon.textContent = "🔍";
+  icon.className = "absolute left-3 top-3 text-gray-400 pointer-events-none";
+
+  // ❌ Clear button
+  const clearBtn = document.createElement("button");
+  clearBtn.textContent = "✖️";
+  clearBtn.className =
+    "absolute right-3 top-2.5 text-gray-400 hover:text-white hidden";
+  clearBtn.setAttribute("type", "button");
+
+  // Input field
   const inputField = document.createElement("input");
   inputField.setAttribute("type", "text");
   inputField.setAttribute("id", "search-input");
   inputField.setAttribute("placeholder", "Search by username...");
-  inputField.classList.add(
-    "p-2",
-    "w-full",
-    "border",
-    "border-gray-300",
-    "rounded-md",
-    "text-gray-900"
-  );
+  inputField.className =
+    "p-3 pl-10 pr-10 w-full rounded-md bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150";
 
-  searchContainer.appendChild(inputField);
-  document.body.insertBefore(
-    searchContainer,
-    document.getElementById("profiles-container")
-  );
+  // Clear on click
+  clearBtn.addEventListener("click", () => {
+    inputField.value = "";
+    clearBtn.classList.add("hidden");
+    fetchProfiles(); // reset list
+  });
+
+  // Show/hide clear button dynamically
+  inputField.addEventListener("input", () => {
+    if (inputField.value.trim().length > 0) {
+      clearBtn.classList.remove("hidden");
+    } else {
+      clearBtn.classList.add("hidden");
+    }
+  });
+
+  container.appendChild(icon);
+  container.appendChild(clearBtn);
+  container.appendChild(inputField);
+  wrapper.insertBefore(container, wrapper.firstChild);
 }
 
-// Dynamisk opprette container for profiler
+// Create the container for profiles
 function createProfilesContainer() {
-  const container = document.createElement("div");
-  container.setAttribute("id", "profiles-container");
+  const container = document.getElementById("profiles-container");
   container.classList.add(
     "grid",
     "grid-cols-1",
@@ -63,14 +101,12 @@ function createProfilesContainer() {
     "gap-6",
     "p-4"
   );
-
-  document.body.appendChild(container);
 }
 
 async function fetchProfiles(query = "") {
   const token = localStorage.getItem("accessToken");
   if (!token) {
-    throw new Error("Token ikke funnet. Vennligst logg inn.");
+    throw new Error("Token not found. Please log in.");
   }
 
   let url = "https://v2.api.noroff.dev/auction/profiles";
@@ -92,15 +128,15 @@ async function fetchProfiles(query = "") {
 
   const data = await response.json();
   if (!data || !data.data) {
-    throw new Error("Ingen profiler funnet");
+    throw new Error("No profiles found");
   }
 
-  displayProfiles(data.data); // Vis profiler basert på resultatene
+  displayProfiles(data.data);
 }
 
 function displayProfiles(profiles) {
   const container = document.getElementById("profiles-container");
-  container.innerHTML = ""; // Tømmer containeren før ny data vises
+  container.innerHTML = "";
 
   profiles.forEach((profile) => {
     const profileDiv = document.createElement("div");
@@ -133,7 +169,7 @@ function displayProfiles(profiles) {
 
     const bio = document.createElement("p");
     bio.classList.add("text-gray-400", "mb-4");
-    bio.textContent = profile.bio || "Ingen bio tilgjengelig";
+    bio.textContent = profile.bio || "No bio available";
 
     const profileButton = document.createElement("button");
     profileButton.textContent = "View Profile";
@@ -147,7 +183,7 @@ function displayProfiles(profiles) {
       "w-full"
     );
     profileButton.addEventListener("click", () => {
-      window.location.href = `/html/profile.html?name=${profile.name}`;
+      window.location.href = `/html/different-profile.html?name=${profile.name}`;
     });
 
     profileDiv.appendChild(avatar);

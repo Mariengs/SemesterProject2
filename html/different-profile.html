@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="../js/user/allProfiles.js"></script>
-    <link rel="stylesheet" href="/src/main.css" />
-    <title>Alle profiler</title>
+    <script type="module" src="../js/user/differentProfile.js"></script>
+    <link rel="stylesheet" href="../src/main.css" />
+    <title>Profile</title>
   </head>
   <body class="bg-gray-900 text-white flex flex-col min-h-screen">
     <!-- Navbar -->
@@ -73,25 +73,7 @@
       </nav>
     </header>
 
-    <main class="p-4">
-      <h1 class="text-3xl font-bold text-center text-white mt-6 mb-4">
-        All Profiles
-      </h1>
-      <div
-        id="auth-message"
-        class="hidden text-center text-red-500 font-semibold mb-4"
-      >
-        You must be logged in to view this page.
-      </div>
-
-      <div id="profiles-wrapper">
-        <!-- Search input will be added here -->
-        <div
-          id="profiles-container"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-        ></div>
-      </div>
-    </main>
+    <main id="profileContainer" class="p-4 max-w-4xl mx-auto flex-1"></main>
     <footer class="bg-gray-800 text-gray-400 py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-center space-x-8">

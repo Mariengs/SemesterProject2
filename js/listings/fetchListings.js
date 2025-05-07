@@ -125,34 +125,50 @@ async function placeBid(listingId) {
 export function buildUI() {
   const app = document.getElementById("app");
 
-  // Søkeinput
+  // 🔍 Search container
+  const searchWrapper = document.createElement("div");
+  searchWrapper.className = "relative mb-4 max-w-md mx-auto";
+
+  const searchIcon = document.createElement("span");
+  searchIcon.textContent = "🔍";
+  searchIcon.className =
+    "absolute left-3 top-2.5 text-gray-400 pointer-events-none";
+
+  const clearBtn = document.createElement("button");
+  clearBtn.textContent = "✖️";
+  clearBtn.className =
+    "absolute right-3 top-2 text-gray-400 hover:text-white hidden";
+  clearBtn.setAttribute("type", "button");
+
   const searchInput = document.createElement("input");
   searchInput.type = "text";
   searchInput.id = "searchInput";
   searchInput.placeholder = "Search by title...";
-  searchInput.classList.add(
-    "bg-gray-700",
-    "text-white",
-    "rounded-md",
-    "p-2",
-    "mb-4",
-    "w-full",
-    "sm:w-auto"
-  );
-  app.appendChild(searchInput);
+  searchInput.className =
+    "w-full pl-10 pr-10 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition";
 
-  // Sortering
+  searchInput.addEventListener("input", () => {
+    const value = searchInput.value.trim();
+    clearBtn.classList.toggle("hidden", value === "");
+    currentPage = 1;
+    applyFilters();
+  });
+
+  clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    clearBtn.classList.add("hidden");
+    currentPage = 1;
+    applyFilters();
+  });
+
+  searchWrapper.append(searchIcon, clearBtn, searchInput);
+  app.appendChild(searchWrapper);
+
+  // ⬇️ Sorting select
   const sortSelect = document.createElement("select");
   sortSelect.id = "sortSelect";
-  sortSelect.classList.add(
-    "bg-gray-700",
-    "text-white",
-    "rounded-md",
-    "p-2",
-    "mb-4",
-    "w-full",
-    "sm:w-auto"
-  );
+  sortSelect.className =
+    "bg-gray-800 text-white border border-gray-600 rounded-md py-2 px-3 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition block mx-auto";
 
   [
     { value: "none", label: "No sorting" },
@@ -169,38 +185,53 @@ export function buildUI() {
     sortSelect.appendChild(option);
   });
 
-  sortSelect.value = "none";
   app.appendChild(sortSelect);
+
+  // ✅ Active Listings Filter
+  const activeFilterWrapper = document.createElement("div");
+  activeFilterWrapper.className = "flex items-center justify-center mb-6";
+
+  const activeCheckbox = document.createElement("input");
+  activeCheckbox.type = "checkbox";
+  activeCheckbox.id = "activeOnly";
+  activeCheckbox.className = "mr-2 rounded text-blue-500 focus:ring-blue-500";
+
+  const activeLabel = document.createElement("label");
+  activeLabel.setAttribute("for", "activeOnly");
+  activeLabel.textContent = "Show only active listings";
+  activeLabel.className = "text-white";
+
+  activeFilterWrapper.appendChild(activeCheckbox);
+  activeFilterWrapper.appendChild(activeLabel);
+  app.appendChild(activeFilterWrapper);
 
   // Listings container
   const listingsContainer = document.createElement("div");
   listingsContainer.id = "listings";
-  listingsContainer.classList.add(
-    "grid",
-    "grid-cols-1",
-    "sm:grid-cols-2",
-    "lg:grid-cols-3",
-    "gap-6"
-  );
+  listingsContainer.className =
+    "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
   app.appendChild(listingsContainer);
 
   // Pagination
   const paginationWrapper = document.createElement("div");
   paginationWrapper.id = "pagination";
+  paginationWrapper.className = "flex justify-center items-center gap-4 mt-8";
 
   const prevPage = document.createElement("button");
   prevPage.id = "prevPage";
   prevPage.textContent = "Previous";
-  prevPage.classList.add("bg-gray-700", "text-white", "p-2", "rounded-md");
+  prevPage.className =
+    "bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600";
 
   const pageInfo = document.createElement("span");
   pageInfo.id = "pageInfo";
-  pageInfo.style.margin = "0 10px";
+  pageInfo.className = "text-white";
 
   const nextPage = document.createElement("button");
   nextPage.id = "nextPage";
   nextPage.textContent = "Next";
-  nextPage.classList.add("bg-gray-700", "text-white", "p-2", "rounded-md");
+  nextPage.className =
+    "bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600";
 
   paginationWrapper.append(prevPage, pageInfo, nextPage);
   app.appendChild(paginationWrapper);
@@ -209,7 +240,10 @@ export function buildUI() {
 // Hent data
 export async function fetchListings() {
   try {
-    const response = await fetch(`${apiUrl}?_bids=true`);
+    const response = await fetch(
+      `${apiUrl}?_bids=true&_sort=created&sortOrder=desc&limit=100`
+    );
+
     const result = await response.json();
     allListings = result.data;
     applyFilters();
@@ -222,13 +256,15 @@ export async function fetchListings() {
 function applyFilters() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const sortBy = document.getElementById("sortSelect").value;
+  const activeOnly = document.getElementById("activeOnly").checked;
 
-  // Filtrer annonser basert på søk (alle annonser vises, men vi sorterer de aktive først)
-  filteredListings = allListings.filter((listing) =>
-    listing.title.toLowerCase().includes(searchTerm)
-  );
+  filteredListings = allListings.filter((listing) => {
+    const matchesSearch = listing.title.toLowerCase().includes(searchTerm);
+    const isActive = new Date(listing.endsAt) > new Date();
+    return matchesSearch && (!activeOnly || isActive);
+  });
 
-  // Sorter annonser
+  // Sorter som før
   filteredListings.sort((a, b) => {
     const isAActive = new Date(a.endsAt) > new Date();
     const isBActive = new Date(b.endsAt) > new Date();
@@ -436,5 +472,9 @@ document.addEventListener("DOMContentLoaded", () => {
       updatePagination();
       window.scrollTo(0, 0);
     }
+  });
+  document.getElementById("activeOnly").addEventListener("change", () => {
+    currentPage = 1;
+    applyFilters();
   });
 });

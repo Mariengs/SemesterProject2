@@ -20,33 +20,75 @@ function hideErrorMessages() {
   });
 }
 
+function isValidURL(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
 function getValues() {
   hideErrorMessages();
 
   const name = document.getElementById("name").value.trim();
-  const password = document.getElementById("password").value.trim();
   const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
   const bio = document.getElementById("bio")?.value.trim() || null;
   const avatar = document.getElementById("avatar")?.value.trim() || null;
   const banner = document.getElementById("banner")?.value.trim() || null;
 
   let isValid = true;
 
-  if (!name || !password || !email) {
-    showErrorMessage("formError", "All fields are required.");
+  // Name validation
+  if (!name) {
+    showErrorMessage("nameError", "Username is required.");
+    isValid = false;
+  } else if (/[^a-zA-Z0-9_]/.test(name)) {
+    showErrorMessage(
+      "nameError",
+      "Username can only contain letters, numbers, and underscores."
+    );
     isValid = false;
   }
 
-  if (!email.endsWith("@stud.noroff.no")) {
-    showErrorMessage("emailError", "E-mail must end with @stud.noroff.no");
+  // Email validation
+  if (!email) {
+    showErrorMessage("emailError", "Email is required.");
+    isValid = false;
+  } else if (!email.endsWith("@stud.noroff.no")) {
+    showErrorMessage("emailError", "Email must end with @stud.noroff.no.");
     isValid = false;
   }
 
-  if (password.length < 8) {
+  // Password validation
+  if (!password) {
+    showErrorMessage("passwordError", "Password is required.");
+    isValid = false;
+  } else if (password.length < 8) {
     showErrorMessage(
       "passwordError",
       "Password must be at least 8 characters."
     );
+    isValid = false;
+  }
+
+  // Bio validation
+  if (bio && bio.length > 160) {
+    showErrorMessage("bioError", "Bio must be less than 160 characters.");
+    isValid = false;
+  }
+
+  // Avatar validation
+  if (avatar && !isValidURL(avatar)) {
+    showErrorMessage("avatarError", "Avatar must be a valid URL.");
+    isValid = false;
+  }
+
+  // Banner validation
+  if (banner && !isValidURL(banner)) {
+    showErrorMessage("bannerError", "Banner must be a valid URL.");
     isValid = false;
   }
 
