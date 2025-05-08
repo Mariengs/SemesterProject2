@@ -4,6 +4,7 @@ import {
   showLogoutButtonIfLoggedIn,
   setupLogoutFunctionality,
 } from "../ui/logout.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   toggleMenu();
@@ -11,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
   loadSelectedProfile();
+  fetchAndDisplayCredits();
 });
 
 async function loadSelectedProfile() {
@@ -118,7 +120,7 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
     const { data: listings } = await response.json();
 
     wrapper.appendChild(
-      createTextElement("h2", "User Listings", "text-xl font-bold text-center")
+      createTextElement("h2", "Listings", "text-xl font-bold text-center")
     );
 
     if (listings.length === 0) {

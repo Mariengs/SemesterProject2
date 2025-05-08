@@ -4,12 +4,14 @@ import {
   showLogoutButtonIfLoggedIn,
   setupLogoutFunctionality,
 } from "../ui/logout.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
+  fetchAndDisplayCredits();
 });
 
 const container = document.getElementById("profileContainer");

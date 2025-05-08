@@ -4,6 +4,7 @@ import {
   showLogoutButtonIfLoggedIn,
   setupLogoutFunctionality,
 } from "../ui/logout.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
@@ -37,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initial fetch for profiles without any search query
   fetchProfiles();
+
+  fetchAndDisplayCredits();
 });
 
 // Create the search input

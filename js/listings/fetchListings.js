@@ -1,15 +1,14 @@
 import { getAccessToken, API_KEY } from "../api/auth.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 const apiUrl = "https://v2.api.noroff.dev/auction/listings";
 let allListings = [];
 let filteredListings = [];
 let currentPage = 1;
 const listingsPerPage = 21;
-let timerInterval; // Flytt her for global tilgjengelighet i denne filen
+let timerInterval;
 
-// Funksjon for å plassere et bud på en annonse
 async function placeBid(listingId) {
-  // Opprett modalen som vises midt på skjermen
   const modal = document.createElement("div");
   modal.id = "bidModal";
   modal.classList.add(
@@ -25,12 +24,12 @@ async function placeBid(listingId) {
     "items-center"
   );
 
-  // Modalinnhold
+  // Modal
   const modalContent = document.createElement("div");
   modalContent.classList.add("bg-gray-900", "p-8", "rounded-lg", "w-96");
   modal.appendChild(modalContent);
 
-  // Legg til modalinnhold
+  // Modalcontent
   const title = document.createElement("h3");
   title.classList.add("text-2xl", "text-center", "text-white", "mb-4");
   title.textContent = "Place Your Bid";
@@ -73,12 +72,12 @@ async function placeBid(listingId) {
   modalContent.append(title, description, bidInput, buttonContainer);
   document.body.appendChild(modal);
 
-  // Lukke modal
+  // Close modal
   cancelButton.addEventListener("click", () => {
-    document.body.removeChild(modal); // Fjern modal fra DOM
+    document.body.removeChild(modal);
   });
 
-  // Håndter innsending av bud
+  // Bid
   placeBidButton.addEventListener("click", async () => {
     const bidAmount = parseFloat(document.getElementById("bidAmount").value);
     if (isNaN(bidAmount) || bidAmount <= 0) {
@@ -107,12 +106,12 @@ async function placeBid(listingId) {
 
       if (response.ok) {
         alert("Your bid has been placed successfully.");
-        fetchListings(); // Oppdater listen etter å ha plassert budet
+        fetchListings(); // Update listings
       } else {
         alert(result.message || "Error placing bid.");
       }
 
-      // Lukk modal etter at budet er plassert
+      // Close modal after successful bid
       document.body.removeChild(modal);
     } catch (error) {
       alert("Failed to place bid: " + error.message);
@@ -121,7 +120,6 @@ async function placeBid(listingId) {
   });
 }
 
-// UI-bygging
 export function buildUI() {
   const app = document.getElementById("app");
 
@@ -237,7 +235,7 @@ export function buildUI() {
   app.appendChild(paginationWrapper);
 }
 
-// Hent data
+// Fetch listings
 export async function fetchListings() {
   try {
     const response = await fetch(
@@ -252,7 +250,7 @@ export async function fetchListings() {
   }
 }
 
-// Filtrering og sortering
+// Filter and sorting
 function applyFilters() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const sortBy = document.getElementById("sortSelect").value;
@@ -264,7 +262,7 @@ function applyFilters() {
     return matchesSearch && (!activeOnly || isActive);
   });
 
-  // Sorter som før
+  // Sort
   filteredListings.sort((a, b) => {
     const isAActive = new Date(a.endsAt) > new Date();
     const isBActive = new Date(b.endsAt) > new Date();
@@ -296,7 +294,7 @@ function applyFilters() {
   displayListings();
 }
 
-// Vis annonser
+// Show listings
 function displayListings() {
   const listingsContainer = document.getElementById("listings");
   listingsContainer.innerHTML = "";
@@ -440,10 +438,11 @@ function updatePagination() {
 document.addEventListener("DOMContentLoaded", () => {
   buildUI();
   fetchListings();
+  fetchAndDisplayCredits();
 
   window.addEventListener("listingCreated", () => {
-    console.log("New listing created, fetching listings again...");
-    fetchListings(); // Hent nye annonser etter opprettelse
+    fetchListings();
+    fetchAndDisplayCredits();
   });
 
   document.getElementById("searchInput").addEventListener("input", () => {

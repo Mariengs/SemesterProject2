@@ -4,15 +4,14 @@ export const REGISTER_URL = "https://v2.api.noroff.dev/auth/register";
 export const API_KEY = "189c7714-8a1c-4a77-963f-6b89d86e85a9";
 
 export function getAccessToken() {
-  // Hent tokenet fra localStorage (eller sessionStorage, eller annet lagringssted)
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
     console.error("No access token found.");
-    return null; // Returner null hvis det ikke finnes et token
+    return null;
   }
 
-  return token; // Returner tokenet hvis det finnes
+  return token;
 }
 
 export async function login(username, password) {

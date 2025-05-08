@@ -1,8 +1,10 @@
 import { REGISTER_URL } from "./auth.js";
 import { toggleMenu } from "../ui/navbar.js";
+import { updateNavVisibility } from "../ui/authHelpers.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
+  updateNavVisibility();
 });
 
 function showErrorMessage(elementId, message) {

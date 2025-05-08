@@ -1,21 +1,20 @@
-// Import necessary modules
 import { API_KEY } from "../api/auth.js";
 import { toggleMenu, updateNavbarForUser } from "../ui/navbar.js";
 import {
   showLogoutButtonIfLoggedIn,
   setupLogoutFunctionality,
 } from "../ui/logout.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
-// Initialize navigation menu and logout functionality
 document.addEventListener("DOMContentLoaded", () => {
   toggleMenu();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
   updateNavbarForUser();
   loadUserProfile();
+  fetchAndDisplayCredits();
 });
 
-// Main function to load user profile
 async function loadUserProfile() {
   const container = document.getElementById("profileContainer");
   const token = localStorage.getItem("accessToken");
@@ -164,7 +163,7 @@ function createSectionWrapper(parent, id) {
   titleSpan.textContent = title;
 
   const icon = document.createElement("span");
-  icon.textContent = "−"; // starts open
+  icon.textContent = "−";
   icon.className = "text-lg transition-transform duration-200";
 
   header.append(titleSpan, icon);
@@ -354,9 +353,6 @@ function showEditForm(listing, wrapper, token, apiKey) {
     inputRow.appendChild(imageInput);
     inputRow.appendChild(removeBtn);
 
-    const previewWrapper = document.createElement("div");
-    previewWrapper.className = "flex justify-center";
-
     const preview = document.createElement("img");
     preview.className =
       "w-[240px] h-[160px] object-cover rounded border border-gray-600 mt-2";
@@ -373,9 +369,8 @@ function showEditForm(listing, wrapper, token, apiKey) {
       }
     });
 
-    previewWrapper.appendChild(preview);
     fieldWrapper.appendChild(inputRow);
-    fieldWrapper.appendChild(previewWrapper);
+    fieldWrapper.appendChild(preview);
     imageContainer.appendChild(fieldWrapper);
   };
 
@@ -402,6 +397,7 @@ function showEditForm(listing, wrapper, token, apiKey) {
   editForm.appendChild(addImageBtn);
 
   const submitButton = document.createElement("button");
+  submitButton.type = "submit";
   submitButton.textContent = "Save Changes";
   submitButton.className =
     "px-4 py-2 bg-blue-500 text-white rounded mt-4 hover:bg-blue-600";
@@ -421,45 +417,47 @@ function showEditForm(listing, wrapper, token, apiKey) {
     editForm.remove();
   });
 
-  submitButton.addEventListener("click", async (e) => {
+  editForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const updatedFields = {};
     const titleValue = titleInput.value.trim();
     const descriptionValue = descriptionInput.value.trim();
 
-    // Legg til oppdatering av tittel hvis den er endret
     if (titleValue && titleValue !== listing.title) {
       updatedFields.title = titleValue;
     }
 
-    // Legg til oppdatering av beskrivelse hvis den er endret
     if ((descriptionValue || "") !== (listing.description || "")) {
       updatedFields.description = descriptionValue;
     }
 
-    // Håndtering av media/bilder
     const imageInputs = imageContainer.querySelectorAll("input[type='url']");
     const validMedia = Array.from(imageInputs)
       .map((input) => input.value.trim())
-      .filter((url) => isValidUrl(url)); // Filtrer ut ugyldige URL-er
+      .filter((url) => isValidUrl(url));
 
-    // Hvis bildene er endret, oppdater 'media'-feltet med riktige URL-er
-    if (validMedia.length > 0) {
+    const currentMediaUrls = (listing.media || []).map((m) =>
+      typeof m === "string" ? m : m.url
+    );
+
+    const mediaChanged =
+      currentMediaUrls.length !== validMedia.length ||
+      currentMediaUrls.some((url, i) => url !== validMedia[i]);
+
+    if (mediaChanged && validMedia.length > 0) {
       updatedFields.media = validMedia.map((url) => ({
-        url: url, // Send url som en string
-        alt: titleValue || listing.title, // Gi et beskrivende alt-tekst (basert på tittel)
+        url,
+        alt: titleValue || listing.title || "Listing image",
       }));
     }
 
-    // Hvis ingen endringer er gjort, gi en advarsel og avslutt
     if (Object.keys(updatedFields).length === 0) {
       alert("No changes made.");
       return;
     }
 
     try {
-      // Send PUT forespørsel til API-et
       const res = await fetch(
         `https://v2.api.noroff.dev/auction/listings/${listing.id}`,
         {
@@ -469,20 +467,20 @@ function showEditForm(listing, wrapper, token, apiKey) {
             "X-Noroff-API-Key": apiKey,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(updatedFields), // Send oppdaterte data
+          body: JSON.stringify(updatedFields),
         }
       );
 
-      // Sjekk om forespørselen var vellykket
-      if (!res.ok) throw new Error("Failed to update the listing.");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(
+          errorData.errors?.[0]?.message || "Failed to update the listing."
+        );
+      }
 
-      // Informer brukeren om at oppdateringen var vellykket
       alert("Listing updated successfully!");
-
-      // Last inn brukerprofilen på nytt for å vise de oppdaterte dataene
-      loadUserProfile(); // Oppdater innholdet på siden
+      loadUserProfile();
     } catch (error) {
-      // Håndter eventuelle feil
       alert(`Error: ${error.message}`);
     }
   });
@@ -491,15 +489,12 @@ function showEditForm(listing, wrapper, token, apiKey) {
   wrapper.appendChild(editForm);
 }
 
-// Utility function to check if the URL is valid
 function isValidUrl(url) {
   const pattern = new RegExp(
-    "^(https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%_\\+.~#?&//=]{2,256}\\.[a-z]{2,6}\\b([a-zA-Z0-9@:%_\\+.~#?&//=]*)?)$"
+    "^(https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%_\\+.~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)?)$"
   );
   return pattern.test(url);
 }
-
-// Fetch and render bids (active and won)
 async function fetchAndRenderBids(
   userName,
   token,

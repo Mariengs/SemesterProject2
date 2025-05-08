@@ -3,15 +3,12 @@ import {
   showLogoutButtonIfLoggedIn,
   setupLogoutFunctionality,
 } from "./ui/logout.js";
-import { fetchListings } from "./listings/fetchListings.js";
+import { updateNavVisibility } from "./ui/authHelpers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   toggleMenu();
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
+  updateNavVisibility();
 });
-
-// window.addEventListener("listingCreated", () => {
-//   fetchListings();
-// });

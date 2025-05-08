@@ -5,6 +5,7 @@ import {
   showLogoutButtonIfLoggedIn,
   setupLogoutFunctionality,
 } from "../ui/logout.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 // DOM-elementer
 const form = document.getElementById("create-listing-form");
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
+  fetchAndDisplayCredits();
 
   // Legg til ett bildefelt ved første last
   addImageButton?.click();
@@ -36,15 +38,7 @@ addImageButton?.addEventListener("click", () => {
     "w-full p-2 mb-1 rounded bg-gray-800 text-white border border-gray-600";
   urlInput.required = false;
 
-  const altInput = document.createElement("input");
-  altInput.type = "text";
-  altInput.placeholder = "Image alt text";
-  altInput.className =
-    "w-full p-2 rounded bg-gray-800 text-white border border-gray-600";
-  altInput.required = false;
-
   container.appendChild(urlInput);
-  container.appendChild(altInput);
 
   mediaWrapper.appendChild(container);
 });

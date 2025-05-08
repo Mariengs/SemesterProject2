@@ -11,9 +11,12 @@
     <header class="bg-gray-800 shadow-md">
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
+          <a
+            href="/"
+            class="flex-shrink text-2xl font-semibold text-gray-200 hover:text-white"
+          >
             Auction House
-          </div>
+          </a>
 
           <div class="md:hidden">
             <button id="menu-toggle" class="text-gray-200 focus:outline-none">
@@ -39,7 +42,8 @@
             >
             <a
               href="/html/allprofiles.html"
-              class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+              id="nav-all-profiles"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
               >All Profiles</a
             >
           </div>
@@ -63,6 +67,7 @@
           >
           <a
             href="/html/allprofiles.html"
+            id="mobile-all-profiles"
             class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >All Profiles</a
           >
@@ -109,7 +114,28 @@
         >
           Login
         </button>
+
+        <p class="text-sm text-center text-gray-400">
+          Don't have an account?
+          <a href="/html/register.html" class="text-blue-500 hover:underline"
+            >Register</a
+          >
+        </p>
       </form>
     </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center space-x-8">
+          <a href="#" class="hover:text-gray-200">About Us</a>
+          <a href="#" class="hover:text-gray-200">Contact</a>
+          <a href="#" class="hover:text-gray-200">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-200">Terms of Service</a>
+        </div>
+        <div class="text-center text-sm mt-4">
+          <p>&copy; 2025 Auction House. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

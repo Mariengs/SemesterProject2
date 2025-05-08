@@ -4,6 +4,7 @@ import {
   showLogoutButtonIfLoggedIn,
 } from "../ui/logout.js";
 import { API_KEY } from "../api/auth.js";
+import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 // Init
 
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
+  fetchAndDisplayCredits();
 });
 
 const container = document.getElementById("listing-container");
