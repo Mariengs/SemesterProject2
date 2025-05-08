@@ -5,6 +5,7 @@ import {
 } from "../ui/logout.js";
 import { API_KEY } from "../api/auth.js";
 import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
+import { updateNavVisibility } from "../ui/authHelpers.js";
 
 // Init
 
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
   fetchAndDisplayCredits();
+  updateNavVisibility();
 });
 
 const container = document.getElementById("listing-container");
@@ -459,6 +461,7 @@ function displayListing(data) {
     if (timeLeft <= 0) {
       clearInterval(countdownInterval);
       endsAt.textContent = "Auction ended.";
+      endsAt.className = "text-red-400 text-lg font-semibold text-center mt-2";
       return;
     }
     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
@@ -477,7 +480,10 @@ function displayListing(data) {
   const currentUser = profile?.name;
   const accessToken = localStorage.getItem("accessToken");
 
+  const hasAuctionEnded = new Date(data.endsAt) < new Date();
+
   if (
+    !hasAuctionEnded &&
     currentUser?.toLowerCase() !== data.seller.name.toLowerCase() &&
     accessToken
   ) {

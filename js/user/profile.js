@@ -37,6 +37,7 @@ async function loadUserProfile() {
     await Promise.all([
       fetchAndRenderListings(userName, token, apiKey, listingsWrapper),
       fetchAndRenderBids(userName, token, apiKey, bidsWrapper, wonBidsWrapper),
+      fetchAndRenderWins(userName, token, apiKey, wonBidsWrapper),
     ]);
   } catch (error) {
     displayError(container, `Could not load profile: ${error.message}`);
@@ -495,6 +496,86 @@ function isValidUrl(url) {
   );
   return pattern.test(url);
 }
+
+async function fetchAndRenderWins(userName, token, apiKey, wrapper) {
+  try {
+    wrapper.innerHTML = "";
+
+    const response = await fetch(
+      `https://v2.api.noroff.dev/auction/profiles/${userName}/wins`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-Noroff-API-Key": apiKey,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch won auctions.");
+    }
+
+    const { data: wins } = await response.json();
+
+    if (wins.length === 0) {
+      wrapper.appendChild(
+        createTextElement(
+          "p",
+          "You haven't won any auctions yet.",
+          "text-gray-500 text-center"
+        )
+      );
+      return;
+    }
+
+    wins.forEach((listing) => {
+      const card = document.createElement("div");
+      card.className = "bg-gray-800 p-4 rounded-lg shadow-md mb-6";
+
+      card.appendChild(
+        createTextElement(
+          "h3",
+          listing.title,
+          "text-lg font-semibold text-white"
+        )
+      );
+
+      const imageUrl =
+        listing.media?.[0]?.url || "https://via.placeholder.com/400x300";
+      card.appendChild(
+        createImageElement(
+          imageUrl,
+          listing.title,
+          "w-full h-48 object-cover rounded-lg mb-4"
+        )
+      );
+
+      card.appendChild(
+        createTextElement(
+          "p",
+          listing.description || "No description available.",
+          "text-gray-400"
+        )
+      );
+
+      const viewLink = document.createElement("a");
+      viewLink.href = `/html/single-listing.html?id=${listing.id}`;
+      viewLink.textContent = "View Listing";
+      viewLink.className = "text-blue-500 hover:underline mt-4 inline-block";
+      card.appendChild(viewLink);
+
+      wrapper.appendChild(card);
+    });
+  } catch (error) {
+    wrapper.appendChild(
+      createTextElement(
+        "p",
+        `Error loading wins: ${error.message}`,
+        "text-red-500"
+      )
+    );
+  }
+}
 async function fetchAndRenderBids(
   userName,
   token,
@@ -543,36 +624,6 @@ async function fetchAndRenderBids(
       activeBids.forEach((bid) => {
         const card = createBidCard(bid);
         bidsWrapper.appendChild(card);
-      });
-    }
-
-    // Won Bids
-    wonBidsWrapper.appendChild(
-      createTextElement(
-        "h2",
-        "Auctions I've Won",
-        "text-xl font-bold text-center mt-8"
-      )
-    );
-
-    const wonBids = bids.filter((bid) => {
-      const isEnded = new Date(bid.listing.endsAt) < new Date();
-      const isHighest = bid.listing.highestBid?.bidderName === userName;
-      return isEnded && isHighest;
-    });
-
-    if (wonBids.length === 0) {
-      wonBidsWrapper.appendChild(
-        createTextElement(
-          "p",
-          "You haven't won any auctions yet.",
-          "text-gray-500 text-center"
-        )
-      );
-    } else {
-      wonBids.forEach((bid) => {
-        const card = createBidCard(bid);
-        wonBidsWrapper.appendChild(card);
       });
     }
   } catch (error) {

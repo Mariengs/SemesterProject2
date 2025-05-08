@@ -299,13 +299,15 @@ function displayListings() {
   const listingsContainer = document.getElementById("listings");
   listingsContainer.innerHTML = "";
 
+  const isLoggedIn = !!localStorage.getItem("accessToken");
+
   const start = (currentPage - 1) * listingsPerPage;
   const end = start + listingsPerPage;
   const listingsToShow = filteredListings.slice(start, end);
 
   if (listingsToShow.length === 0) {
     const noResults = document.createElement("p");
-    noResults.textContent = "Ingen treff.";
+    noResults.textContent = "No results.";
     listingsContainer.appendChild(noResults);
     return;
   }
@@ -352,6 +354,8 @@ function displayListings() {
 
       if (distance < 0) {
         countdownContainer.textContent = "Auction ended";
+        countdownContainer.classList.remove("text-gray-300");
+        countdownContainer.classList.add("text-red-400", "font-semibold");
         clearInterval(timerInterval);
       } else {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -360,7 +364,10 @@ function displayListings() {
         );
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
         countdownContainer.textContent = `Time left: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        countdownContainer.classList.remove("text-red-400", "font-semibold");
+        countdownContainer.classList.add("text-gray-300");
       }
     }
 
@@ -380,7 +387,7 @@ function displayListings() {
     bidDisplay.innerHTML = `<strong>Highest bid:</strong> ${highestBid} kr`;
 
     const bidButton = document.createElement("button");
-    bidButton.textContent = "Bid on Listing";
+    bidButton.textContent = "Place Bid";
     bidButton.classList.add(
       "bg-blue-500",
       "text-white",
@@ -410,15 +417,14 @@ function displayListings() {
       window.location.href = `/html/single-listing.html?id=${listing.id}`;
     });
 
-    card.append(
-      img,
-      title,
-      description,
-      countdownContainer,
-      bidDisplay,
-      bidButton,
-      infoButton
-    );
+    card.append(img, title, description, countdownContainer, bidDisplay);
+
+    if (isLoggedIn) {
+      card.appendChild(bidButton);
+    }
+
+    card.appendChild(infoButton);
+
     listingsContainer.appendChild(card);
   });
 

@@ -7,43 +7,79 @@ import {
 } from "../ui/logout.js";
 import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
-// DOM-elementer
 const form = document.getElementById("create-listing-form");
 const message = document.getElementById("form-message");
 const listingsContainer = document.getElementById("listings-container");
 const mediaWrapper = document.getElementById("media-wrapper");
 const addImageButton = document.getElementById("add-image-button");
 
-// Initier app
 document.addEventListener("DOMContentLoaded", () => {
   toggleMenu();
   updateNavbarForUser();
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
   fetchAndDisplayCredits();
-
-  // Legg til ett bildefelt ved første last
   addImageButton?.click();
 });
 
-// Legg til nytt bilde-felt
 addImageButton?.addEventListener("click", () => {
   const container = document.createElement("div");
-  container.className = "mt-2";
+  container.className = "mt-4 space-y-2 border border-gray-700 p-4 rounded";
+
+  const inputRow = document.createElement("div");
+  inputRow.className = "flex items-center gap-2 w-full";
 
   const urlInput = document.createElement("input");
   urlInput.type = "url";
   urlInput.placeholder = "Image URL";
   urlInput.className =
-    "w-full p-2 mb-1 rounded bg-gray-800 text-white border border-gray-600";
+    "flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600";
   urlInput.required = false;
 
-  container.appendChild(urlInput);
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.textContent = "✕";
+  removeBtn.className =
+    "text-white bg-red-600 rounded px-2 py-1 hover:bg-red-700 text-sm";
+  removeBtn.addEventListener("click", () => {
+    container.remove();
+  });
 
+  const preview = document.createElement("img");
+  preview.className =
+    "h-24 w-24 object-cover rounded border border-gray-600 hidden mt-2";
+  preview.alt = "Preview";
+
+  const errorText = document.createElement("p");
+  errorText.className = "text-red-500 text-sm hidden";
+  errorText.textContent = "Image could not be loaded.";
+
+  inputRow.appendChild(urlInput);
+  inputRow.appendChild(removeBtn);
+  container.appendChild(inputRow);
+  container.appendChild(preview);
+  container.appendChild(errorText);
   mediaWrapper.appendChild(container);
+
+  urlInput.addEventListener("input", () => {
+    const url = urlInput.value.trim();
+    if (isValidImageUrl(url)) {
+      preview.src = url;
+      preview.onload = () => {
+        preview.classList.remove("hidden");
+        errorText.classList.add("hidden");
+      };
+      preview.onerror = () => {
+        preview.classList.add("hidden");
+        errorText.classList.remove("hidden");
+      };
+    } else {
+      preview.classList.add("hidden");
+      errorText.classList.add("hidden");
+    }
+  });
 });
 
-// Opprett ny annonse
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -59,15 +95,12 @@ form?.addEventListener("submit", async (e) => {
 
   endsAt = new Date(endsAt).toISOString();
 
-  // Hent alle bilde-URL-er
   const mediaContainers = mediaWrapper.querySelectorAll("div");
   const media = Array.from(mediaContainers)
     .map((container) => {
-      const inputs = container.querySelectorAll("input");
-      const url = inputs[0]?.value.trim();
-      const alt = inputs[1]?.value.trim() || "";
+      const url = container.querySelector("input")?.value.trim();
       if (url) {
-        return { url, alt };
+        return { url, alt: "Listing image" };
       }
       return null;
     })
@@ -104,7 +137,6 @@ form?.addEventListener("submit", async (e) => {
   }
 });
 
-// Vis meldinger til brukeren
 function displayMessage(text, type) {
   message.textContent = text;
   message.className = "";
@@ -115,4 +147,8 @@ function displayMessage(text, type) {
   } else {
     message.classList.add("text-gray-500");
   }
+}
+
+function isValidImageUrl(url) {
+  return /^https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
 }
