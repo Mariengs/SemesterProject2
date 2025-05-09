@@ -4,20 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
-    <link href="/dist/assets/main.css" rel="stylesheet" />
-    <script type="module" src="../js/user/profile.js"></script>
+    <script type="module" crossorigin src="/assets/differentprofile-Co4R85TR.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/navbar-S6xofydm.js">
+    <link rel="modulepreload" crossorigin href="/assets/logout-Cu6HC3oB.js">
+    <link rel="stylesheet" crossorigin href="/assets/navbar-D-ATqcnv.css">
   </head>
   <body class="bg-gray-900 text-white flex flex-col min-h-screen">
+    <!-- Navbar -->
     <header class="bg-gray-800 shadow-md">
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <!-- Logo -->
-          <a
-            href="/"
-            class="flex-shrink text-2xl font-semibold text-gray-200 hover:text-white"
-          >
+          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
             Auction House
-          </a>
+          </div>
 
           <div
             id="creditInfo"
@@ -53,7 +53,7 @@
             <a
               href="/html/allprofiles.html"
               class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
-              >All Profiles</a
+              >All profiles</a
             >
           </div>
         </div>
@@ -82,16 +82,7 @@
       </nav>
     </header>
 
-    <main class="flex-1 max-w-4xl mx-auto w-full p-6">
-      <section
-        id="profileContainer"
-        class="bg-gray-800 rounded-2xl p-8 shadow-lg text-center space-y-6"
-      >
-        <!-- Content gets inserted by JS -->
-        <p class="text-gray-400">Loading profile...</p>
-      </section>
-    </main>
-
+    <main id="profileContainer" class="p-4 max-w-4xl mx-auto flex-1"></main>
     <footer class="bg-gray-800 text-gray-400 py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-center space-x-8">

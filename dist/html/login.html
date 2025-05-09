@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile</title>
-    <link href="/dist/assets/main.css" rel="stylesheet" />
-    <script type="module" src="../js/user/profile.js"></script>
+    <title>Login</title>
+    <script type="module" crossorigin src="/assets/login-DGkGiGgp.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/navbar-S6xofydm.js">
+    <link rel="modulepreload" crossorigin href="/assets/authHelpers-C36Y3Pp2.js">
+    <link rel="stylesheet" crossorigin href="/assets/navbar-D-ATqcnv.css">
   </head>
   <body class="bg-gray-900 text-white flex flex-col min-h-screen">
     <header class="bg-gray-800 shadow-md">
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <!-- Logo -->
           <a
             href="/"
             class="flex-shrink text-2xl font-semibold text-gray-200 hover:text-white"
@@ -19,21 +20,12 @@
             Auction House
           </a>
 
-          <div
-            id="creditInfo"
-            class="text-sm text-gray-300 bg-gray-700 px-3 py-1 rounded-md"
-          >
-            Credits: ...
-          </div>
-
-          <!-- Burger Menu (Mobile) -->
           <div class="md:hidden">
             <button id="menu-toggle" class="text-gray-200 focus:outline-none">
               ☰
             </button>
           </div>
 
-          <!-- Nav Links (Desktop) -->
           <div class="hidden md:flex space-x-6">
             <a
               href="/"
@@ -52,29 +44,32 @@
             >
             <a
               href="/html/allprofiles.html"
+              id="nav-all-profiles"
               class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
               >All Profiles</a
             >
           </div>
         </div>
 
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
-          <a href="/" class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+          <a
+            href="index.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >Home</a
           >
           <a
-            href="/html/register.html"
+            href="register.html"
             class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >Register</a
           >
           <a
-            href="/html/login.html"
+            href="login.html"
             class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >Login</a
           >
           <a
             href="/html/allprofiles.html"
+            id="mobile-all-profiles"
             class="block px-3 py-2 rounded-md bg-gray-700 text-white"
             >All Profiles</a
           >
@@ -82,14 +77,53 @@
       </nav>
     </header>
 
-    <main class="flex-1 max-w-4xl mx-auto w-full p-6">
-      <section
-        id="profileContainer"
-        class="bg-gray-800 rounded-2xl p-8 shadow-lg text-center space-y-6"
+    <main class="flex justify-center items-center min-h-screen px-4">
+      <form
+        id="loginForm"
+        class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md space-y-6"
       >
-        <!-- Content gets inserted by JS -->
-        <p class="text-gray-400">Loading profile...</p>
-      </section>
+        <h1 class="text-2xl font-bold text-center">Login</h1>
+
+        <p id="formError" class="text-red-500 text-sm hidden text-center"></p>
+
+        <div>
+          <label for="loginEmail" class="block text-sm font-medium mb-1"
+            >E-mail</label
+          >
+          <input
+            type="email"
+            id="loginEmail"
+            required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="loginPassword" class="block text-sm font-medium mb-1"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="loginPassword"
+            required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold transition-colors"
+        >
+          Login
+        </button>
+
+        <p class="text-sm text-center text-gray-400">
+          Don't have an account?
+          <a href="/html/register.html" class="text-blue-500 hover:underline"
+            >Register here</a
+          >
+        </p>
+      </form>
     </main>
 
     <footer class="bg-gray-800 text-gray-400 py-8">

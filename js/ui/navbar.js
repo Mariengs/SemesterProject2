@@ -11,13 +11,12 @@ export function toggleMenu() {
 
 export function updateNavbarForUser() {
   const token = localStorage.getItem("accessToken");
-  const userName = localStorage.getItem("userName"); // hvis du lagrer dette etter login
+  const userName = localStorage.getItem("userName");
 
   const desktopLinks = document.querySelectorAll("nav .md\\:flex a");
   const mobileLinks = document.querySelectorAll("#mobile-menu a");
 
   if (token && userName) {
-    // Bytt ut "Login" i desktop-nav
     desktopLinks.forEach((link) => {
       if (link.textContent.trim() === "Login") {
         link.textContent = "Profile";
@@ -25,11 +24,10 @@ export function updateNavbarForUser() {
       }
       if (link.textContent.trim() === "Register") {
         link.textContent = "Create Listing";
-        link.setAttribute("href", "/html/create-listing.html"); // Legg til riktig URL for opprettelse av annonse
+        link.setAttribute("href", "/html/create-listing.html");
       }
     });
 
-    // Bytt ut "Login" i mobil-nav
     mobileLinks.forEach((link) => {
       if (link.textContent.trim() === "Login") {
         link.textContent = "Profile";
@@ -37,7 +35,7 @@ export function updateNavbarForUser() {
       }
       if (link.textContent.trim() === "Register") {
         link.textContent = "Create Listing";
-        link.setAttribute("href", "/html/create-listing.html"); // Legg til riktig URL for opprettelse av annonse
+        link.setAttribute("href", "/html/create-listing.html");
       }
     });
   }

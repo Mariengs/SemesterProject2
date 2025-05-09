@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
+@layer components {
+  .btn-bid {
+    @apply bg-black
+      text-white
+      font-semibold
+      py-2 px-4
+      rounded-lg
+      shadow-lg
+      border-2 border-green-500
+      hover:border-green-600
+      focus:outline-none
+      focus:ring-4 focus:ring-offset-2 focus:ring-green-300
+      transition ease-in-out duration-150;
+  }
+}
 @tailwind utilities;

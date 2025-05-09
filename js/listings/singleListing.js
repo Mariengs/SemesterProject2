@@ -7,8 +7,6 @@ import { API_KEY } from "../api/auth.js";
 import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 import { updateNavVisibility } from "../ui/authHelpers.js";
 
-// Init
-
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
   updateNavbarForUser();
@@ -67,7 +65,7 @@ function createBidList(bidsArray) {
   const section = document.createElement("section");
   section.className = "bg-gray-700 rounded-md p-6 mt-6 shadow w-full max-w-xl";
 
-  const header = document.createElement("h3");
+  const header = document.createElement("h1");
   header.textContent = "Last 5 bids";
   header.className = "text-lg font-semibold text-white mb-3 text-center";
   section.appendChild(header);
@@ -114,10 +112,11 @@ function createBidList(bidsArray) {
 }
 
 function createBidButton(data, token) {
-  const btn = createStyledButton(
-    "Place a bid",
-    "bg-green-600 hover:bg-green-700 text-white"
-  );
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "Place a bid";
+  btn.className = "btn-bid"; // <-- bruker kun vår komponent-klasse
+  btn.setAttribute("aria-label", "Place a bid");
 
   btn.addEventListener("click", () => {
     showBidModal(data.id, token);

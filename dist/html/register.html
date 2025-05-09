@@ -3,27 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="/dist/assets/main.css" rel="stylesheet" />
-    <script type="module" src="../js/api/login.js"></script>
-    <title>Login</title>
+    <title>Register</title>
+    <script type="module" crossorigin src="/assets/register-Dn4G8SNc.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/navbar-S6xofydm.js">
+    <link rel="modulepreload" crossorigin href="/assets/authHelpers-C36Y3Pp2.js">
+    <link rel="stylesheet" crossorigin href="/assets/navbar-D-ATqcnv.css">
   </head>
   <body class="bg-gray-900 text-white flex flex-col min-h-screen">
     <header class="bg-gray-800 shadow-md">
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a
-            href="/"
-            class="flex-shrink text-2xl font-semibold text-gray-200 hover:text-white"
-          >
+          <!-- Logo -->
+          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
             Auction House
-          </a>
+          </div>
 
+          <!-- Burger Menu (Mobile) -->
           <div class="md:hidden">
             <button id="menu-toggle" class="text-gray-200 focus:outline-none">
               ☰
             </button>
           </div>
 
+          <!-- Nav Links (Desktop) -->
           <div class="hidden md:flex space-x-6">
             <a
               href="/"
@@ -44,11 +46,12 @@
               href="/html/allprofiles.html"
               id="nav-all-profiles"
               class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
-              >All Profiles</a
+              >All profiles</a
             >
           </div>
         </div>
 
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
           <a
             href="index.html"
@@ -74,36 +77,114 @@
         </div>
       </nav>
     </header>
-
     <main class="flex justify-center items-center min-h-screen px-4">
       <form
-        id="loginForm"
+        id="registerForm"
         class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md space-y-6"
       >
-        <h1 class="text-2xl font-bold text-center">Login</h1>
+        <h1 class="text-2xl font-bold text-center">Register</h1>
 
         <p id="formError" class="text-red-500 text-sm hidden text-center"></p>
 
         <div>
-          <label for="loginEmail" class="block text-sm font-medium mb-1"
-            >E-mail</label
+          <label for="name" class="block text-sm font-medium mb-1"
+            >Username</label
           >
+          <p
+            id="nameError"
+            class="text-red-500 text-sm hidden mt-1 error-message"
+          ></p>
+
           <input
-            type="email"
-            id="loginEmail"
+            type="text"
+            id="name"
+            name="name"
             required
             class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label for="loginPassword" class="block text-sm font-medium mb-1"
+          <label for="email" class="block text-sm font-medium mb-1"
+            >E-mail</label
+          >
+          <p
+            id="emailError"
+            class="text-red-500 text-sm hidden mt-1 error-message"
+          ></p>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium mb-1"
             >Password</label
           >
+          <p
+            id="passwordError"
+            class="text-red-500 text-sm hidden mt-1 error-message"
+          ></p>
           <input
             type="password"
-            id="loginPassword"
+            id="password"
+            name="password"
             required
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="bio" class="block text-sm font-medium mb-1"
+            >Bio (optional)</label
+          >
+          <p
+            id="bioError"
+            class="text-red-500 text-sm hidden mt-1 error-message"
+          ></p>
+
+          <textarea
+            id="bio"
+            name="bio"
+            rows="3"
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="avatar" class="block text-sm font-medium mb-1"
+            >Avatar URL (optional)</label
+          >
+          <p
+            id="avatarError"
+            class="text-red-500 text-sm hidden mt-1 error-message"
+          ></p>
+
+          <input
+            type="url"
+            id="avatar"
+            name="avatar"
+            class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="banner" class="block text-sm font-medium mb-1"
+            >Banner URL (optional)</label
+          >
+          <p
+            id="bannerError"
+            class="text-red-500 text-sm hidden mt-1 error-message"
+          ></p>
+
+          <input
+            type="url"
+            id="banner"
+            name="banner"
             class="w-full px-4 py-2 rounded-md bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -112,13 +193,12 @@
           type="submit"
           class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold transition-colors"
         >
-          Login
+          Register
         </button>
-
         <p class="text-sm text-center text-gray-400">
-          Don't have an account?
-          <a href="/html/register.html" class="text-blue-500 hover:underline"
-            >Register here</a
+          Aldready have an account?
+          <a href="/html/login.html" class="text-blue-500 hover:underline"
+            >Login here</a
           >
         </p>
       </form>

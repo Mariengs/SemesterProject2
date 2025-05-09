@@ -6,7 +6,6 @@ export async function fetchAndDisplayCredits() {
 
   const creditContainer = document.getElementById("creditInfo");
 
-  // Skjul hvis ikke logget inn
   if (!token || !userName) {
     if (creditContainer) {
       creditContainer.style.display = "none";
@@ -29,7 +28,7 @@ export async function fetchAndDisplayCredits() {
     const credits = result.data.credits;
 
     if (creditContainer) {
-      creditContainer.style.display = "inline-block"; // Vis igjen hvis skjult
+      creditContainer.style.display = "inline-block";
       creditContainer.textContent = `Credits: ${credits} kr`;
     }
   } catch (error) {
