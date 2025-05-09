@@ -387,16 +387,10 @@ function displayListings() {
     bidDisplay.innerHTML = `<strong>Highest bid:</strong> ${highestBid} kr`;
 
     const bidButton = document.createElement("button");
+    bidButton.type = "button";
     bidButton.textContent = "Place Bid";
-    bidButton.classList.add(
-      "bg-blue-500",
-      "text-white",
-      "px-4",
-      "py-2",
-      "rounded-md",
-      "mt-4",
-      "w-full"
-    );
+    bidButton.className = "btn-place-bid";
+    bidButton.setAttribute("aria-label", "Place Bid");
     bidButton.addEventListener("click", (e) => {
       e.preventDefault();
       placeBid(listing.id);

@@ -9,7 +9,6 @@ import { fetchAndDisplayCredits } from "../ui/fetchCredits.js";
 
 const form = document.getElementById("create-listing-form");
 const message = document.getElementById("form-message");
-const listingsContainer = document.getElementById("listings-container");
 const mediaWrapper = document.getElementById("media-wrapper");
 const addImageButton = document.getElementById("add-image-button");
 
@@ -19,12 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
   showLogoutButtonIfLoggedIn();
   setupLogoutFunctionality();
   fetchAndDisplayCredits();
-  addImageButton?.click();
 });
 
 addImageButton?.addEventListener("click", () => {
   const container = document.createElement("div");
   container.className = "mt-4 space-y-2 border border-gray-700 p-4 rounded";
+  container.classList.add("media-item");
 
   const inputRow = document.createElement("div");
   inputRow.className = "flex items-center gap-2 w-full";
@@ -45,39 +44,50 @@ addImageButton?.addEventListener("click", () => {
     container.remove();
   });
 
+  inputRow.append(urlInput, removeBtn);
+
   const preview = document.createElement("img");
   preview.className =
-    "h-24 w-24 object-cover rounded border border-gray-600 hidden mt-2";
+    "w-24 h-24 object-cover rounded border border-gray-600 hidden mt-2";
   preview.alt = "Preview";
-
   const errorText = document.createElement("p");
   errorText.className = "text-red-500 text-sm hidden";
-  errorText.textContent = "Image could not be loaded.";
+  errorText.textContent = "Could not load image.";
 
-  inputRow.appendChild(urlInput);
-  inputRow.appendChild(removeBtn);
-  container.appendChild(inputRow);
-  container.appendChild(preview);
-  container.appendChild(errorText);
+  container.append(inputRow, preview, errorText);
   mediaWrapper.appendChild(container);
 
-  urlInput.addEventListener("input", () => {
-    const url = urlInput.value.trim();
-    if (isValidImageUrl(url)) {
-      preview.src = url;
-      preview.onload = () => {
-        preview.classList.remove("hidden");
-        errorText.classList.add("hidden");
-      };
-      preview.onerror = () => {
-        preview.classList.add("hidden");
-        errorText.classList.remove("hidden");
-      };
-    } else {
+  function loadPreview(url) {
+    if (!url) {
       preview.classList.add("hidden");
       errorText.classList.add("hidden");
+      preview.removeAttribute("src");
+      return;
     }
+    preview.src = url;
+
+    preview.classList.add("hidden");
+  }
+
+  urlInput.addEventListener("input", () => {
+    loadPreview(urlInput.value.trim());
   });
+  urlInput.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData("text");
+    const trimmed = pasted.trim();
+    urlInput.value = trimmed;
+    loadPreview(trimmed);
+  });
+
+  preview.onload = () => {
+    preview.classList.remove("hidden");
+    errorText.classList.add("hidden");
+  };
+  preview.onerror = () => {
+    preview.classList.add("hidden");
+    errorText.classList.remove("hidden");
+  };
 });
 
 form?.addEventListener("submit", async (e) => {
@@ -92,19 +102,18 @@ form?.addEventListener("submit", async (e) => {
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
   let endsAt = document.getElementById("endsAt").value;
-
   endsAt = new Date(endsAt).toISOString();
 
-  const mediaContainers = mediaWrapper.querySelectorAll("div");
+  const mediaContainers = Array.from(mediaWrapper.children).filter((el) =>
+    el.classList.contains("media-item")
+  );
+
   const media = Array.from(mediaContainers)
     .map((container) => {
-      const url = container.querySelector("input")?.value.trim();
-      if (url) {
-        return { url, alt: "Listing image" };
-      }
-      return null;
+      const url = container.querySelector("input[type='url']")?.value.trim();
+      return url ? { url, alt: "Listing image" } : null;
     })
-    .filter((item) => item !== null);
+    .filter(Boolean);
 
   const listingData = { title, description, media, endsAt };
 
@@ -120,11 +129,9 @@ form?.addEventListener("submit", async (e) => {
     });
 
     const result = await response.json();
-
     if (response.ok) {
       displayMessage("Listing created successfully! Redirecting...", "green");
       setTimeout(() => {
-        window.dispatchEvent(new CustomEvent("listingCreated"));
         window.location.href = "/";
       }, 1000);
     } else {
@@ -147,8 +154,4 @@ function displayMessage(text, type) {
   } else {
     message.classList.add("text-gray-500");
   }
-}
-
-function isValidImageUrl(url) {
-  return /^https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
 }

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "postbuild": "npx tailwindcss -i ./src/input.css -o ./dist/assets/main.css"
+    "postbuild": "npx tailwindcss -i ./src/input.css -o ./dist/assets/main.css",
+    "watch:css": "npx tailwindcss -i ./src/input.css -o ./dist/assets/main.css --watch"
   },
   "dependencies": {
     "vite": "^5.0.0"

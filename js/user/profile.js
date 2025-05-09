@@ -205,21 +205,6 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
 
     const { data: listings } = await response.json();
 
-    wrapper.appendChild(
-      createTextElement("h2", "My Listings", "text-xl font-bold text-center")
-    );
-
-    if (listings.length === 0) {
-      wrapper.appendChild(
-        createTextElement(
-          "p",
-          "You have no listings yet.",
-          "text-gray-500 text-center"
-        )
-      );
-      return;
-    }
-
     listings.forEach((listing) => {
       const card = document.createElement("div");
       card.className = "bg-gray-800 p-4 rounded-lg shadow-md mb-6";
@@ -599,15 +584,6 @@ async function fetchAndRenderBids(
     }
 
     const { data: bids } = await response.json();
-
-    // Active Bids
-    bidsWrapper.appendChild(
-      createTextElement(
-        "h2",
-        "Listings I've Bid On",
-        "text-xl font-bold text-center mt-8"
-      )
-    );
 
     const activeBids = bids.filter(
       (bid) => new Date(bid.listing.endsAt) > new Date()

@@ -115,7 +115,7 @@ function createBidButton(data, token) {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.textContent = "Place a bid";
-  btn.className = "btn-bid"; // <-- bruker kun vår komponent-klasse
+  btn.className = "btn-bid";
   btn.setAttribute("aria-label", "Place a bid");
 
   btn.addEventListener("click", () => {

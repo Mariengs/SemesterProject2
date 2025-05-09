@@ -32,7 +32,6 @@ async function loadSelectedProfile() {
     renderProfile(container, profileData);
 
     const listingsWrapper = createSectionWrapper(container, "userListings");
-
     await fetchAndRenderListings(userName, token, apiKey, listingsWrapper);
   } catch (error) {
     displayError(container, `Could not load profile: ${error.message}`);
@@ -61,14 +60,15 @@ async function fetchProfileData(userName, token, apiKey) {
 function renderProfile(container, data) {
   container.innerHTML = "";
 
-  const bannerUrl = data.banner?.url || "https://via.placeholder.com/800x200";
+  const bannerUrl = data.banner?.url || "https://via.placeholder.com/1200x300";
   const avatarUrl = data.avatar?.url || "https://via.placeholder.com/100";
 
+  // Gjør banner høyere (h-64 i stedet for h-48) og behold full bredde
   container.appendChild(
     createImageElement(
       bannerUrl,
       data.banner?.alt || "Banner",
-      "w-full h-48 object-cover rounded-lg mb-4"
+      "w-full h-64 object-cover rounded-lg mb-4"
     )
   );
   container.appendChild(
@@ -119,30 +119,40 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
 
     const { data: listings } = await response.json();
 
-    wrapper.appendChild(
-      createTextElement("h2", "Listings", "text-xl font-bold text-center")
+    // Seksjonstittel
+    const titleEl = createTextElement(
+      "h2",
+      "Listings",
+      "text-xl font-bold text-center mb-4 col-span-full"
     );
+    wrapper.appendChild(titleEl);
 
     if (listings.length === 0) {
       wrapper.appendChild(
         createTextElement(
           "p",
           "This user has no listings.",
-          "text-gray-500 text-center"
+          "text-gray-500 text-center col-span-full"
         )
       );
       return;
     }
 
+    // Lag en grid-container for kortene
+    const grid = document.createElement("div");
+    grid.className =
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
+    wrapper.appendChild(grid);
+
     listings.forEach((listing) => {
       const card = document.createElement("div");
-      card.className = "bg-gray-800 p-4 rounded-lg shadow-md mb-6";
+      card.className = "bg-gray-800 p-4 rounded-lg shadow-md";
 
       card.appendChild(
         createTextElement(
           "h3",
           listing.title,
-          "text-lg font-semibold text-white"
+          "text-lg font-semibold text-white mb-2"
         )
       );
 
@@ -152,7 +162,7 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
         createImageElement(
           imageUrl,
           listing.title,
-          "w-full h-48 object-cover rounded-lg mb-4"
+          "w-full h-40 object-cover rounded-lg mb-4"
         )
       );
 
@@ -160,24 +170,25 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
         createTextElement(
           "p",
           listing.description || "No description provided.",
-          "text-gray-400"
+          "text-gray-400 mb-4"
         )
       );
 
       const viewLink = document.createElement("a");
       viewLink.href = `/html/single-listing.html?id=${listing.id}`;
       viewLink.textContent = "View Listing";
-      viewLink.className = "text-blue-500 hover:underline mt-4 inline-block";
+      viewLink.className =
+        "text-blue-500 hover:underline mt-2 inline-block font-medium";
       card.appendChild(viewLink);
 
-      wrapper.appendChild(card);
+      grid.appendChild(card);
     });
   } catch (error) {
     wrapper.appendChild(
       createTextElement(
         "p",
         `Error loading listings: ${error.message}`,
-        "text-red-500"
+        "text-red-500 text-center col-span-full"
       )
     );
   }
@@ -205,7 +216,7 @@ function displayError(container, message) {
   container.innerHTML = "";
   const errorMsg = document.createElement("p");
   errorMsg.textContent = message;
-  errorMsg.className = "text-red-500";
+  errorMsg.className = "text-red-500 text-center";
   container.appendChild(errorMsg);
 }
 
@@ -213,7 +224,8 @@ function displayError(container, message) {
 function createSectionWrapper(parent, id) {
   const wrapper = document.createElement("div");
   wrapper.id = id;
-  wrapper.className = "mt-8";
+
+  wrapper.className = "mt-8 grid grid-cols-1 gap-6";
   parent.appendChild(wrapper);
   return wrapper;
 }
