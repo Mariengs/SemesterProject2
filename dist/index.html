@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homepage</title>
+    <script type="module" crossorigin src="/assets/index-DYvK6hiW.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D-ATqcnv.css">
+  </head>
+  <body class="bg-gray-900 text-white flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <header class="bg-gray-800 shadow-md">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex-shrink-0 text-2xl font-semibold text-gray-200">
+            <a href="/">Auction House</a>
+          </div>
+
+          <!-- Credits -->
+          <div
+            id="creditInfo"
+            class="text-sm text-gray-300 bg-gray-700 px-3 py-1 rounded-md"
+          >
+            Credits: ...
+          </div>
+
+          <!-- Burger Menu (Mobile) -->
+          <div class="md:hidden">
+            <button id="menu-toggle" class="text-gray-200 focus:outline-none">
+              ☰
+            </button>
+          </div>
+
+          <!-- Nav Links (Desktop) -->
+          <div class="hidden md:flex space-x-6">
+            <a
+              href="/"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Home</a
+            >
+            <a
+              href="/html/register.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Register</a
+            >
+            <a
+              href="/html/login.html"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >Login</a
+            >
+            <a
+              href="/html/allprofiles.html"
+              id="nav-all-profiles"
+              class="text-gray-200 hover:bg-gray-700 px-3 py-2 rounded-md"
+              >All Profiles</a
+            >
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2">
+          <a href="/" class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Home</a
+          >
+          <a
+            href="/html/register.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Register</a
+          >
+          <a
+            href="/html/login.html"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >Login</a
+          >
+          <a
+            href="/html/allprofiles.html"
+            id="mobile-all-profiles"
+            class="block px-3 py-2 rounded-md bg-gray-700 text-white"
+            >All Profiles</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-1 mt-4">
+      <div id="app"></div>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-8 mt-4">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center space-x-8">
+          <a href="#" class="hover:text-gray-200">About Us</a>
+          <a href="#" class="hover:text-gray-200">Contact</a>
+          <a href="#" class="hover:text-gray-200">Privacy Policy</a>
+          <a href="#" class="hover:text-gray-200">Terms of Service</a>
+        </div>
+        <div class="text-center text-sm mt-4">
+          <p>&copy; 2025 Auction House. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
