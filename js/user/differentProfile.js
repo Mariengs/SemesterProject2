@@ -92,13 +92,6 @@ function renderProfile(container, data) {
       "text-gray-400 text-center"
     )
   );
-  container.appendChild(
-    createTextElement(
-      "p",
-      `Credits: ${data.credits}`,
-      "text-lg font-semibold text-green-400 text-center mt-2"
-    )
-  );
 }
 
 async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
