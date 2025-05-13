@@ -70,7 +70,7 @@ Welcome to **Semester Project 2**, a real-world assignment where you’ll build 
 
 ## Technical Requirements
 
-- **Frameworks/Libraries:** use vanilla JS or a modern framework (React, Vue, etc.).
+- **Frameworks/Libraries:** use vanilla JS
 - **CSS:** Tailwind CSS (v3+), PostCSS, Autoprefixer.
 - **Build Tool:** Vite.
 - **State Management & Routing:** as needed (e.g. localStorage for auth).
