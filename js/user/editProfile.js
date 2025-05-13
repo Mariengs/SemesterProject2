@@ -24,7 +24,6 @@ if (!token || !userName || !API_KEY) {
   errorMsg.className = "text-red-500 text-center";
   container.appendChild(errorMsg);
 } else {
-  // Fetch profile data
   fetch(`https://v2.api.noroff.dev/auction/profiles/${userName}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -51,7 +50,6 @@ if (!token || !userName || !API_KEY) {
       form.className =
         "space-y-4 max-w-lg mx-auto bg-gray-800 p-6 rounded-lg shadow-lg";
 
-      // Helper: input block
       const createInputBlock = (labelText, id, type, value = "") => {
         const div = document.createElement("div");
 
@@ -73,7 +71,7 @@ if (!token || !userName || !API_KEY) {
         return { div, input };
       };
 
-      // Name
+      // Name (read only)
       const { div: nameDiv, input: nameField } = createInputBlock(
         "Username",
         "name",
@@ -84,7 +82,7 @@ if (!token || !userName || !API_KEY) {
       nameField.classList.add("bg-gray-600", "cursor-not-allowed");
       form.appendChild(nameDiv);
 
-      // Email (readonly, vises kun)
+      // Email (read only)
       const { div: emailDiv, input: emailField } = createInputBlock(
         "E-mail",
         "email",

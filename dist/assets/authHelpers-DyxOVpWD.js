@@ -1,1 +1,0 @@
-import{g as a}from"./navbar-CV3-IAa4.js";function f(){const t=a(),l=localStorage.getItem("userName"),n=t&&l,i=document.getElementById("nav-all-profiles"),s=document.getElementById("nav-profile"),c=document.getElementById("mobile-all-profiles"),m=document.getElementById("mobile-profile");function e(o){o&&(o.style.display=n?"inline-block":"none")}e(i),e(s),e(c),e(m)}export{f as u};

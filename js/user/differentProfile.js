@@ -63,7 +63,6 @@ function renderProfile(container, data) {
   const bannerUrl = data.banner?.url || "https://via.placeholder.com/1200x300";
   const avatarUrl = data.avatar?.url || "https://via.placeholder.com/100";
 
-  // Gjør banner høyere (h-64 i stedet for h-48) og behold full bredde
   container.appendChild(
     createImageElement(
       bannerUrl,

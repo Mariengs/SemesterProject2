@@ -50,12 +50,12 @@ function createSearchField() {
   const container = document.createElement("div");
   container.className = "mb-6 max-w-md mx-auto relative";
 
-  // 🔍 Search icon
+  // Search icon
   const icon = document.createElement("span");
   icon.textContent = "🔍";
   icon.className = "absolute left-3 top-3 text-gray-400 pointer-events-none";
 
-  // ❌ Clear button
+  // Clear button
   const clearBtn = document.createElement("button");
   clearBtn.textContent = "✖️";
   clearBtn.className =
@@ -77,7 +77,7 @@ function createSearchField() {
     fetchProfiles(); // reset list
   });
 
-  // Show/hide clear button dynamically
+  // Show/hide clear button
   inputField.addEventListener("input", () => {
     if (inputField.value.trim().length > 0) {
       clearBtn.classList.remove("hidden");
@@ -92,7 +92,7 @@ function createSearchField() {
   wrapper.insertBefore(container, wrapper.firstChild);
 }
 
-// Create the container for profiles
+// Profilescontainer
 function createProfilesContainer() {
   const container = document.getElementById("profiles-container");
   container.classList.add(

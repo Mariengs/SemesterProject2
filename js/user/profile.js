@@ -292,7 +292,7 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
   }
 }
 
-// Function to show edit form inline
+// Inline form for editing listing
 function showEditForm(listing, wrapper, token, apiKey) {
   const editForm = document.createElement("form");
   editForm.className = "space-y-4 mt-4 p-4 bg-gray-700 rounded-lg shadow-lg";
@@ -651,7 +651,7 @@ function createBidCard(bid) {
   return card;
 }
 
-// Utility: Create countdown timer
+// Countdown timer
 function createCountdownTimer(endDate) {
   const timer = document.createElement("p");
   timer.className = "text-gray-400";
@@ -674,7 +674,7 @@ function createCountdownTimer(endDate) {
     timer.textContent = `Ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
   }
 
-  updateTimer(); // Initial run
+  updateTimer();
   const intervalId = setInterval(updateTimer, 1000);
 
   return timer;

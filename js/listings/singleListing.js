@@ -306,7 +306,7 @@ function showEditForm(listing, wrapper, token, apiKey) {
 
   // Add one blank field if none exist
   if (imageContainer.children.length === 0) {
-    addImageField(""); // 👈 always blank
+    addImageField("");
   }
 
   const addImageBtn = document.createElement("button");
@@ -314,7 +314,7 @@ function showEditForm(listing, wrapper, token, apiKey) {
   addImageBtn.textContent = "+ Add more images";
   addImageBtn.className =
     "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700";
-  addImageBtn.addEventListener("click", () => addImageField("")); // 👈 always blank
+  addImageBtn.addEventListener("click", () => addImageField(""));
 
   editForm.appendChild(imageContainer);
   editForm.appendChild(addImageBtn);

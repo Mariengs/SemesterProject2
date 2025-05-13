@@ -106,7 +106,7 @@ async function placeBid(listingId) {
 
       if (response.ok) {
         alert("Your bid has been placed successfully.");
-        fetchListings(); // Update listings
+        fetchListings();
       } else {
         alert(result.message || "Error placing bid.");
       }
@@ -397,16 +397,14 @@ function displayListings() {
     });
 
     const infoButton = document.createElement("button");
+    infoButton.type = "button";
     infoButton.textContent = "More Info";
-    infoButton.classList.add(
-      "bg-gray-500",
-      "text-white",
-      "px-4",
-      "py-2",
-      "rounded-md",
-      "mt-4",
-      "w-full"
-    );
+    infoButton.className = "btn-more-info";
+    infoButton.setAttribute("aria-label", "More Info");
+    infoButton.addEventListener("click", (e) => {
+      e.preventDefault();
+    });
+
     infoButton.addEventListener("click", () => {
       window.location.href = `/html/single-listing.html?id=${listing.id}`;
     });
