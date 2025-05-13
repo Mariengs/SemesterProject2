@@ -1,5 +1,7 @@
 # Semester Project 2 – Front-End Auction House
 
+<img src="/Skjermbilde 2025-05-13 kl. 13.32.25.png"  width="200"/>
+
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
@@ -11,7 +13,6 @@
 7. [Getting Started](#getting-started)
 8. [Folder Structure](#folder-structure)
 9. [Scripts](#scripts)
-10. [License](#license)
 
 ---
 
