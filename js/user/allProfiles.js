@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchProfiles(query);
   });
 
-  // Initial fetch for profiles without any search query
   fetchProfiles();
 
   fetchAndDisplayCredits();
@@ -49,6 +48,12 @@ function createSearchField() {
 
   const container = document.createElement("div");
   container.className = "mb-6 max-w-md mx-auto relative";
+
+  // Label for input field
+  const label = document.createElement("label");
+  label.setAttribute("for", "search-input");
+  label.className = "sr-only";
+  label.textContent = "Search by username";
 
   // Search icon
   const icon = document.createElement("span");
@@ -74,7 +79,7 @@ function createSearchField() {
   clearBtn.addEventListener("click", () => {
     inputField.value = "";
     clearBtn.classList.add("hidden");
-    fetchProfiles(); // reset list
+    fetchProfiles();
   });
 
   // Show/hide clear button
@@ -86,6 +91,7 @@ function createSearchField() {
     }
   });
 
+  container.appendChild(label);
   container.appendChild(icon);
   container.appendChild(clearBtn);
   container.appendChild(inputField);
@@ -175,17 +181,12 @@ function displayProfiles(profiles) {
     bio.textContent = profile.bio || "No bio available";
 
     const profileButton = document.createElement("button");
+    profileButton.type = "button";
     profileButton.textContent = "View Profile";
-    profileButton.classList.add(
-      "bg-blue-500",
-      "text-white",
-      "px-4",
-      "py-2",
-      "rounded-md",
-      "mt-4",
-      "w-full"
-    );
-    profileButton.addEventListener("click", () => {
+    profileButton.className = "btn-view-profile";
+    profileButton.setAttribute("aria-label", "View Profile");
+    profileButton.addEventListener("click", (e) => {
+      e.preventDefault();
       window.location.href = `/html/different-profile.html?name=${profile.name}`;
     });
 

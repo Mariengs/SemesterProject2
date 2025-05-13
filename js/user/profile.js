@@ -64,7 +64,7 @@ async function fetchProfileData(userName, token, apiKey) {
   return data;
 }
 
-// Function to render profile information
+// Render profile information
 function renderProfile(container, data) {
   container.innerHTML = "";
 
@@ -109,7 +109,8 @@ function renderProfile(container, data) {
 
   const editButton = document.createElement("button");
   editButton.textContent = "Edit Profile";
-  editButton.className = "mt-4 px-4 py-2 bg-blue-500 text-white rounded";
+  editButton.className =
+    "mt-4 px-4 py-2 bg-black hover:bg-gray-700 text-white rounded";
   editButton.addEventListener("click", () => {
     window.location.href = "/html/edit-profile.html";
   });
@@ -209,14 +210,16 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
       const card = document.createElement("div");
       card.className = "bg-gray-800 p-4 rounded-lg shadow-md mb-6";
 
+      // Title
       card.appendChild(
         createTextElement(
-          "h3",
+          "h2",
           listing.title,
           "text-lg font-semibold text-white"
         )
       );
 
+      // Image
       const imageUrl =
         listing.media?.[0]?.url || "https://via.placeholder.com/400x300";
       card.appendChild(
@@ -227,6 +230,7 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
         )
       );
 
+      // Description
       card.appendChild(
         createTextElement(
           "p",
@@ -235,49 +239,61 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
         )
       );
 
-      const viewLink = document.createElement("a");
-      viewLink.href = `/html/single-listing.html?id=${listing.id}`;
-      viewLink.textContent = "View Listing";
-      viewLink.className = "text-blue-500 hover:underline mt-4 inline-block";
-      card.appendChild(viewLink);
+      // View Listing button
+      const viewButton = document.createElement("button");
+      viewButton.type = "button";
+      viewButton.textContent = "View Listing";
+      viewButton.className = "btn-view-listing";
+      viewButton.addEventListener("click", () => {
+        window.location.href = `/html/single-listing.html?id=${listing.id}`;
+      });
+      card.appendChild(viewButton);
 
+      // Edit button
       const editButton = document.createElement("button");
+      editButton.type = "button";
       editButton.textContent = "Edit";
-      editButton.className =
-        "ml-4 text-yellow-500 hover:underline inline-block";
+      editButton.className = "btn-edit";
       editButton.addEventListener("click", () => {
         showEditForm(listing, card, token, apiKey);
       });
       card.appendChild(editButton);
 
+      // Delete button
       const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
       deleteButton.textContent = "Delete";
-      deleteButton.className = "ml-4 text-red-500 hover:underline inline-block";
+      deleteButton.className = "btn-delete";
       deleteButton.addEventListener("click", async () => {
-        if (confirm("Are you sure you want to delete this listing?")) {
-          try {
-            const deleteResponse = await fetch(
-              `https://v2.api.noroff.dev/auction/listings/${listing.id}`,
-              {
-                method: "DELETE",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "X-Noroff-API-Key": apiKey,
-                },
-              }
-            );
+        if (!confirm("Are you sure you want to delete this listing?")) return;
 
-            if (!deleteResponse.ok) {
-              throw new Error("Failed to delete the listing.");
+        try {
+          const deleteResponse = await fetch(
+            `https://v2.api.noroff.dev/auction/listings/${listing.id}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "X-Noroff-API-Key": apiKey,
+              },
             }
+          );
 
-            card.remove();
-          } catch (error) {
-            alert(`Error: ${error.message}`);
+          if (!deleteResponse.ok) {
+            throw new Error("Failed to delete the listing.");
           }
+
+          card.remove();
+        } catch (error) {
+          alert(`Error: ${error.message}`);
         }
       });
       card.appendChild(deleteButton);
+      const btnWrapper = document.createElement("div");
+      btnWrapper.className = "flex justify-center space-x-4 mt-4";
+
+      btnWrapper.append(viewButton, editButton, deleteButton);
+      card.appendChild(btnWrapper);
 
       wrapper.appendChild(card);
     });
@@ -517,6 +533,7 @@ async function fetchAndRenderWins(userName, token, apiKey, wrapper) {
       const card = document.createElement("div");
       card.className = "bg-gray-800 p-4 rounded-lg shadow-md mb-6";
 
+      // Tittel
       card.appendChild(
         createTextElement(
           "h3",
@@ -525,6 +542,7 @@ async function fetchAndRenderWins(userName, token, apiKey, wrapper) {
         )
       );
 
+      // Bilde
       const imageUrl =
         listing.media?.[0]?.url || "https://via.placeholder.com/400x300";
       card.appendChild(
@@ -535,6 +553,7 @@ async function fetchAndRenderWins(userName, token, apiKey, wrapper) {
         )
       );
 
+      // Beskrivelse
       card.appendChild(
         createTextElement(
           "p",
@@ -543,12 +562,22 @@ async function fetchAndRenderWins(userName, token, apiKey, wrapper) {
         )
       );
 
-      const viewLink = document.createElement("a");
-      viewLink.href = `/html/single-listing.html?id=${listing.id}`;
-      viewLink.textContent = "View Listing";
-      viewLink.className = "text-blue-500 hover:underline mt-4 inline-block";
-      card.appendChild(viewLink);
+      // View Listing-knapp
+      const viewButton = document.createElement("button");
+      viewButton.type = "button";
+      viewButton.textContent = "View Listing";
+      viewButton.className = "btn-view-listing";
+      viewButton.addEventListener("click", () => {
+        window.location.href = `/html/single-listing.html?id=${listing.id}`;
+      });
 
+      // Responsive wrapper for knapp
+      const btnWrapper = document.createElement("div");
+      btnWrapper.className =
+        "flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center mt-4";
+      btnWrapper.appendChild(viewButton);
+
+      card.appendChild(btnWrapper);
       wrapper.appendChild(card);
     });
   } catch (error) {
@@ -561,6 +590,7 @@ async function fetchAndRenderWins(userName, token, apiKey, wrapper) {
     );
   }
 }
+
 async function fetchAndRenderBids(
   userName,
   token,
@@ -642,12 +672,20 @@ function createBidCard(bid) {
   const countdown = createCountdownTimer(new Date(bid.listing.endsAt));
   card.appendChild(countdown);
 
-  const viewLink = document.createElement("a");
-  viewLink.href = `/html/single-listing.html?id=${bid.listing.id}`;
-  viewLink.textContent = "View Listing";
-  viewLink.className = "text-blue-500 hover:underline mt-4 inline-block";
-  card.appendChild(viewLink);
+  const viewButton = document.createElement("button");
+  viewButton.type = "button";
+  viewButton.textContent = "View Listing";
+  viewButton.className = "btn-view-listing";
+  viewButton.addEventListener("click", () => {
+    window.location.href = `/html/single-listing.html?id=${bid.listing.id}`;
+  });
 
+  const btnWrapper = document.createElement("div");
+  btnWrapper.className =
+    "flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center mt-4";
+  btnWrapper.appendChild(viewButton);
+
+  card.appendChild(btnWrapper);
   return card;
 }
 

@@ -65,7 +65,7 @@ function createBidList(bidsArray) {
   const section = document.createElement("section");
   section.className = "bg-gray-700 rounded-md p-6 mt-6 shadow w-full max-w-xl";
 
-  const header = document.createElement("h1");
+  const header = document.createElement("h2");
   header.textContent = "Last 5 bids";
   header.className = "text-lg font-semibold text-white mb-3 text-center";
   section.appendChild(header);
@@ -179,11 +179,12 @@ function showBidModal(listingId, token) {
   const btnGroup = document.createElement("div");
   btnGroup.className = "flex justify-between gap-4 mt-4";
 
+  // Create buttons
   const cancel = createStyledButton("Cancel", "bg-gray-600 hover:bg-gray-700");
   cancel.addEventListener("click", () => document.body.removeChild(overlay));
 
   const submit = createStyledButton(
-    "Submit",
+    "Place bid",
     "bg-green-600 hover:bg-green-700"
   );
   submit.addEventListener("click", async () => {
@@ -222,7 +223,9 @@ function showBidModal(listingId, token) {
     }
   });
 
-  btnGroup.append(cancel, submit);
+  // **Bytt rekkefølge her**: først Submit, så Cancel
+  btnGroup.append(submit, cancel);
+
   modal.append(closeBtn, heading, highestBidText, input, error, btnGroup);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
