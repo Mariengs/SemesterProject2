@@ -62,10 +62,6 @@ Welcome to **Semester Project 2**, a real-world assignment where you’ll build 
 - **Modern, Clean & Responsive** UI on mobile, tablet & desktop.
 - **Intuitive Navigation:** clear header, footer, and section flows.
 - **Accessibility:** WCAG-friendly contrast, keyboard nav, ARIA labels.
-- **High-Fidelity Prototype** in your design tool (Figma, Sketch, etc.) covering
-  - Desktop & mobile screens
-  - Clickable “happy-path” interactions
-  - Final colors & optimized images
 
 ---
 
@@ -76,7 +72,7 @@ Welcome to **Semester Project 2**, a real-world assignment where you’ll build 
 - **Build Tool:** Vite.
 - **State Management & Routing:** as needed (e.g. localStorage for auth).
 - **Error Handling:** clear UI feedback on API errors, form validation.
-- **Version Control:** Git & GitHub, with clean commit history and meaningful messages.
+- **Version Control:** Git & GitHub, with clean commit history
 
 ---
 
