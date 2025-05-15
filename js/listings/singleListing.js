@@ -223,7 +223,6 @@ function showBidModal(listingId, token) {
     }
   });
 
-  // **Bytt rekkefølge her**: først Submit, så Cancel
   btnGroup.append(submit, cancel);
 
   modal.append(closeBtn, heading, highestBidText, input, error, btnGroup);

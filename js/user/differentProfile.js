@@ -169,8 +169,7 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
       const viewLink = document.createElement("a");
       viewLink.href = `/html/single-listing.html?id=${listing.id}`;
       viewLink.textContent = "View Listing";
-      viewLink.className =
-        "text-blue-500 hover:underline mt-2 inline-block font-medium";
+      viewLink.className = "btn-view-listing";
       card.appendChild(viewLink);
 
       grid.appendChild(card);

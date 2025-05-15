@@ -311,8 +311,10 @@ async function fetchAndRenderListings(userName, token, apiKey, wrapper) {
 // Inline form for editing listing
 function showEditForm(listing, wrapper, token, apiKey) {
   const editForm = document.createElement("form");
-  editForm.className = "space-y-4 mt-4 p-4 bg-gray-700 rounded-lg shadow-lg";
+  editForm.className =
+    "space-y-4 mt-4 p-4 bg-gray-700 rounded-lg shadow-lg overflow-x-hidden";
 
+  // TITLE
   const titleInput = document.createElement("input");
   titleInput.type = "text";
   titleInput.value = listing.title || "";
@@ -320,141 +322,124 @@ function showEditForm(listing, wrapper, token, apiKey) {
     "w-full p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
   editForm.appendChild(titleInput);
 
+  // DESCRIPTION
   const descriptionInput = document.createElement("textarea");
   descriptionInput.value = listing.description || "";
   descriptionInput.className =
     "w-full p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
   editForm.appendChild(descriptionInput);
 
+  // IMAGE FIELDS CONTAINER
   const imageContainer = document.createElement("div");
-  imageContainer.className = "space-y-4";
+  imageContainer.className = "space-y-4 w-full";
 
   const addImageField = (url = "") => {
     const fieldWrapper = document.createElement("div");
-    fieldWrapper.className = "flex flex-col space-y-2";
+    fieldWrapper.className = "flex flex-col space-y-2 w-full";
 
     const inputRow = document.createElement("div");
-    inputRow.className = "flex items-center gap-2";
+    inputRow.className = "flex items-center gap-2 flex-wrap min-w-0";
 
     const imageInput = document.createElement("input");
     imageInput.type = "url";
     imageInput.value = url;
     imageInput.placeholder = "Enter image URL";
     imageInput.className =
-      "flex-1 p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+      "flex-1 min-w-0 p-2 border rounded bg-gray-800 text-white border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.textContent = "✕";
     removeBtn.className =
-      "text-white text-lg hover:text-red-400 bg-gray-800 px-2 py-0.5 rounded border border-gray-500";
-    removeBtn.addEventListener("click", () => {
-      fieldWrapper.remove();
-    });
+      "px-1 py-0.5 text-sm sm:px-2 sm:py-1 sm:text-base text-white hover:text-red-400 bg-gray-800 rounded border border-gray-500 flex-shrink-0";
+    removeBtn.addEventListener("click", () => fieldWrapper.remove());
 
-    inputRow.appendChild(imageInput);
-    inputRow.appendChild(removeBtn);
+    inputRow.append(imageInput, removeBtn);
 
     const preview = document.createElement("img");
     preview.className =
-      "w-[240px] h-[160px] object-cover rounded border border-gray-600 mt-2";
+      "w-full sm:w-[240px] h-[160px] object-cover rounded border border-gray-600 mt-2";
     preview.style.display = url ? "block" : "none";
     if (url) preview.src = url;
 
     imageInput.addEventListener("input", () => {
       const val = imageInput.value.trim();
-      if (val) {
-        preview.src = val;
-        preview.style.display = "block";
-      } else {
-        preview.style.display = "none";
-      }
+      preview.style.display = val ? "block" : "none";
+      if (val) preview.src = val;
     });
 
-    fieldWrapper.appendChild(inputRow);
-    fieldWrapper.appendChild(preview);
+    fieldWrapper.append(inputRow, preview);
     imageContainer.appendChild(fieldWrapper);
   };
 
-  (listing.media || []).forEach((mediaUrl) => {
-    if (typeof mediaUrl === "string") {
-      addImageField(mediaUrl);
-    } else if (mediaUrl?.url) {
-      addImageField(mediaUrl.url);
-    }
+  (listing.media || []).forEach((m) => {
+    const url = typeof m === "string" ? m : m.url;
+    addImageField(url);
   });
+  if (!imageContainer.children.length) addImageField("");
 
-  if (imageContainer.children.length === 0) {
-    addImageField("");
-  }
+  editForm.appendChild(imageContainer);
 
+  // ADD IMAGE BUTTON
   const addImageBtn = document.createElement("button");
   addImageBtn.type = "button";
   addImageBtn.textContent = "+ Add more images";
   addImageBtn.className =
-    "px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700";
+    "px-2 py-1 text-sm sm:px-4 sm:py-2 sm:text-base bg-gray-600 text-white rounded hover:bg-gray-700";
   addImageBtn.addEventListener("click", () => addImageField(""));
-
-  editForm.appendChild(imageContainer);
   editForm.appendChild(addImageBtn);
+
+  // SAVE & CANCEL
+  const btnWrapper = document.createElement("div");
+  btnWrapper.className = "flex justify-center gap-4 mt-4";
 
   const submitButton = document.createElement("button");
   submitButton.type = "submit";
   submitButton.textContent = "Save Changes";
   submitButton.className =
-    "px-4 py-2 bg-blue-500 text-white rounded mt-4 hover:bg-blue-600";
+    "px-2 py-1 text-sm sm:px-4 sm:py-2 sm:text-base bg-blue-500 text-white rounded hover:bg-blue-600";
 
   const cancelButton = document.createElement("button");
-  cancelButton.textContent = "Cancel";
   cancelButton.type = "button";
+  cancelButton.textContent = "Cancel";
   cancelButton.className =
-    "px-4 py-2 bg-red-500 text-white rounded mt-4 hover:bg-red-600";
+    "px-2 py-1 text-sm sm:px-4 sm:py-2 sm:text-base bg-red-500 text-white rounded hover:bg-red-600";
+  cancelButton.addEventListener("click", () => editForm.remove());
 
-  const btnWrapper = document.createElement("div");
-  btnWrapper.className = "flex justify-center gap-4 mt-4";
-  btnWrapper.appendChild(submitButton);
-  btnWrapper.appendChild(cancelButton);
+  btnWrapper.append(submitButton, cancelButton);
+  editForm.appendChild(btnWrapper);
 
-  cancelButton.addEventListener("click", () => {
-    editForm.remove();
-  });
-
+  // SUBMIT HANDLER
   editForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const updatedFields = {};
     const titleValue = titleInput.value.trim();
     const descriptionValue = descriptionInput.value.trim();
-
     if (titleValue && titleValue !== listing.title) {
       updatedFields.title = titleValue;
     }
-
-    if ((descriptionValue || "") !== (listing.description || "")) {
+    if (descriptionValue !== (listing.description || "")) {
       updatedFields.description = descriptionValue;
     }
 
     const imageInputs = imageContainer.querySelectorAll("input[type='url']");
     const validMedia = Array.from(imageInputs)
-      .map((input) => input.value.trim())
-      .filter((url) => isValidUrl(url));
-
-    const currentMediaUrls = (listing.media || []).map((m) =>
+      .map((i) => i.value.trim())
+      .filter((u) => isValidUrl(u));
+    const original = (listing.media || []).map((m) =>
       typeof m === "string" ? m : m.url
     );
-
-    const mediaChanged =
-      currentMediaUrls.length !== validMedia.length ||
-      currentMediaUrls.some((url, i) => url !== validMedia[i]);
-
-    if (mediaChanged && validMedia.length > 0) {
-      updatedFields.media = validMedia.map((url) => ({
-        url,
+    const changed =
+      validMedia.length !== original.length ||
+      validMedia.some((u, i) => u !== original[i]);
+    if (changed) {
+      updatedFields.media = validMedia.map((u) => ({
+        url: u,
         alt: titleValue || listing.title || "Listing image",
       }));
     }
 
-    if (Object.keys(updatedFields).length === 0) {
+    if (!Object.keys(updatedFields).length) {
       alert("No changes made.");
       return;
     }
@@ -472,22 +457,17 @@ function showEditForm(listing, wrapper, token, apiKey) {
           body: JSON.stringify(updatedFields),
         }
       );
-
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(
-          errorData.errors?.[0]?.message || "Failed to update the listing."
-        );
+        const err = await res.json();
+        throw new Error(err.errors?.[0]?.message || "Oppdatering feilet.");
       }
-
       alert("Listing updated successfully!");
       loadUserProfile();
-    } catch (error) {
-      alert(`Error: ${error.message}`);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
     }
   });
 
-  editForm.appendChild(btnWrapper);
   wrapper.appendChild(editForm);
 }
 
