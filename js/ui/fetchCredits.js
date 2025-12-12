@@ -24,7 +24,16 @@ export async function fetchAndDisplayCredits() {
       }
     );
 
+    if (!response.ok) {
+      throw new Error(`Failed to fetch credits: ${response.status}`);
+    }
+
     const result = await response.json();
+
+    if (!result.data) {
+      throw new Error("No data returned from API");
+    }
+
     const credits = result.data.credits;
 
     if (creditContainer) {

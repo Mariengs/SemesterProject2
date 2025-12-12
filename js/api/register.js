@@ -1,35 +1,22 @@
-import { REGISTER_URL } from "./auth.js";
 import { toggleMenu } from "../ui/navbar.js";
 import { updateNavVisibility } from "../ui/authHelpers.js";
+import { showErrorMessage, hideErrorMessages } from "../helpers/ui.js";
+import {
+  isValidURL,
+  isValidUsername,
+  isValidStudEmail,
+  isValidPassword,
+  isValidBio,
+} from "../helpers/validation.js";
+import {
+  createRegisterRequestBody,
+  registerUser,
+} from "../helpers/registerHelpers.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   toggleMenu();
   updateNavVisibility();
 });
-
-function showErrorMessage(elementId, message) {
-  const errorElement = document.getElementById(elementId);
-  if (errorElement) {
-    errorElement.textContent = message;
-    errorElement.classList.remove("hidden");
-  }
-}
-
-function hideErrorMessages() {
-  document.querySelectorAll(".error-message").forEach((el) => {
-    el.classList.add("hidden");
-    el.textContent = "";
-  });
-}
-
-function isValidURL(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
 
 function getValues() {
   hideErrorMessages();
@@ -47,7 +34,7 @@ function getValues() {
   if (!name) {
     showErrorMessage("nameError", "Username is required.");
     isValid = false;
-  } else if (/[^a-zA-Z0-9_]/.test(name)) {
+  } else if (!isValidUsername(name)) {
     showErrorMessage(
       "nameError",
       "Username can only contain letters, numbers, and underscores."
@@ -59,7 +46,7 @@ function getValues() {
   if (!email) {
     showErrorMessage("emailError", "Email is required.");
     isValid = false;
-  } else if (!email.endsWith("@stud.noroff.no")) {
+  } else if (!isValidStudEmail(email)) {
     showErrorMessage("emailError", "Email must end with @stud.noroff.no.");
     isValid = false;
   }
@@ -68,7 +55,7 @@ function getValues() {
   if (!password) {
     showErrorMessage("passwordError", "Password is required.");
     isValid = false;
-  } else if (password.length < 8) {
+  } else if (!isValidPassword(password)) {
     showErrorMessage(
       "passwordError",
       "Password must be at least 8 characters."
@@ -77,7 +64,7 @@ function getValues() {
   }
 
   // Bio validation
-  if (bio && bio.length > 160) {
+  if (!isValidBio(bio)) {
     showErrorMessage("bioError", "Bio must be less than 160 characters.");
     isValid = false;
   }
@@ -97,48 +84,14 @@ function getValues() {
   return isValid ? { name, password, email, bio, avatar, banner } : null;
 }
 
-function createRequestBody({ name, email, password, bio, avatar, banner }) {
-  return {
-    name,
-    email,
-    password,
-    bio: bio ?? "Default bio",
-    avatar: {
-      url: avatar || "https://via.placeholder.com/150",
-      alt: "User avatar",
-    },
-    banner: {
-      url: banner || "https://via.placeholder.com/600x200",
-      alt: "User banner",
-    },
-    venueManager: true,
-  };
-}
-
-async function registerUser(requestBody) {
+async function handleRegistration(requestBody) {
   try {
-    const response = await fetch(REGISTER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Something went wrong:", errorData);
-      showErrorMessage(
-        "formError",
-        `Registration failed: ${errorData.message || response.statusText}`
-      );
-      return;
-    }
-
-    const data = await response.json();
+    const data = await registerUser(requestBody);
     localStorage.setItem("accessToken", data.accessToken);
     alert("Registration successful!");
     window.location.href = "login.html";
   } catch (error) {
-    showErrorMessage("formError", `Something went wrong: ${error.message}`);
+    showErrorMessage("formError", `Registration failed: ${error.message}`);
   }
 }
 
@@ -152,6 +105,6 @@ document
       return;
     }
 
-    const requestBodyData = createRequestBody(values);
-    registerUser(requestBodyData);
+    const requestBodyData = createRegisterRequestBody(values);
+    handleRegistration(requestBodyData);
   });

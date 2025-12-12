@@ -12,8 +12,8 @@ const loginForm = document.getElementById("loginForm");
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
 
   if (!email.endsWith("@stud.noroff.no")) {
     alert("You must have @stud.noroff.no e-mail address to log in.");
@@ -29,13 +29,13 @@ loginForm.addEventListener("submit", async (event) => {
 
     const result = await response.json();
 
-    if (response.ok) {
+    if (response.ok && result.data) {
       const { accessToken, ...profile } = result.data;
 
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("profile", JSON.stringify(profile));
 
-      // Extra values for qucik access
+      // Extra values for quick access
       localStorage.setItem("userName", profile.name);
       localStorage.setItem("credits", profile.credits);
       localStorage.setItem("apiKey", API_KEY);
